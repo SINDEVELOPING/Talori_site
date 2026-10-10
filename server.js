@@ -1,6 +1,7 @@
-    'use strict';
+'use strict';
 
 require('dotenv').config();
+const ids = require('./ids');
 
 process.on('unhandledRejection', (err) => console.error('[unhandledRejection]', err?.message || err));
 process.on('uncaughtException',  (err) => console.error('[uncaughtException]',  err?.message || err));
@@ -66,134 +67,130 @@ const WEBSITE_URL      = process.env.WEBSITE_URL || `http://localhost:${PORT}`;
 const DISCORD_CLIENT_ID     = process.env.DISCORD_CLIENT_ID;
 const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
 const DISCORD_REDIRECT_URI  = process.env.DISCORD_REDIRECT_URI || `http://localhost:${PORT}/auth/callback`;
-const GUILD_ID              = '1133794342876762213';
+const GUILD_ID              = ids.guild;
 
 const SERVER_INVITE     = process.env.SERVER_INVITE     || 'https://discord.gg/talori';
 const VERIFY_CHANNEL_ID = process.env.VERIFY_CHANNEL_ID || '';
-const BAN_APPEAL_CHANNEL_ID         = process.env.BAN_APPEAL_CHANNEL_ID         || '1488240041519218718';
-const NONADMISSION_APPEAL_CHANNEL_ID = process.env.NONADMISSION_APPEAL_CHANNEL_ID || '1501643784948027545';
+const BAN_APPEAL_CHANNEL_ID         = process.env.BAN_APPEAL_CHANNEL_ID || ids.channels.banAppeal;
+const NONADMISSION_APPEAL_CHANNEL_ID = process.env.NONADMISSION_APPEAL_CHANNEL_ID || ids.channels.nonadmissionAppeal;
 
 const PUNISHMENT_ROLES = {
-    '1501139738390691951': { type: 'ban',            label: 'Бан',              color: '#e05555', blocking: true  },
-    '1500987860843626496': { type: 'unverify',       label: 'Анверефи',         color: '#8b5fe8', blocking: true  },
-    '1452979354228228217': { type: 'nonadmission',   label: 'Недопуск',         color: '#e8a03b', blocking: true  },
-    '1501139737258496111': { type: 'nonadmissionBan',label: 'Бан-недопуск',     color: '#e05555', blocking: true  },
-    '1501139827108876308': { type: 'voicemute',      label: 'Голосовой мут',    color: '#5b7de8', blocking: false },
-    '1501139738822967347': { type: 'textmute',       label: 'Текстовый мут',    color: '#5b7de8', blocking: false },
-    '1501642374562975814': { type: 'chillban',       label: 'Чилл бан',         color: '#3ab8b8', blocking: false },
-    '1501140512290377799': { type: 'events_ban',     label: 'Бан с ивентов',    color: '#c8a84b', blocking: false },
-    '1439563430276235375': { type: 'creative_ban',   label: 'Бан с креатива',   color: '#c8a84b', blocking: false },
-    '1501140515926708286': { type: 'close_ban',      label: 'Бан с клозов',     color: '#c8a84b', blocking: false },
-    '1501235069694509336': { type: 'mafia_ban',      label: 'Бан с мафии',      color: '#c8a84b', blocking: false },
+    [ids.punish.ban]: { type: 'ban',            label: 'Бан',              color: '#e05555', blocking: true  },
+    [ids.punish.unverify]: { type: 'unverify',       label: 'Анверефи',         color: '#8b5fe8', blocking: true  },
+    [ids.punish.nonadmission]: { type: 'nonadmission',   label: 'Недопуск',         color: '#e8a03b', blocking: true  },
+    [ids.punish.nonadmissionBan]: { type: 'nonadmissionBan',label: 'Бан-недопуск',     color: '#e05555', blocking: true  },
+    [ids.punish.voicemute]: { type: 'voicemute',      label: 'Голосовой мут',    color: '#5b7de8', blocking: false },
+    [ids.punish.textmute]: { type: 'textmute',       label: 'Текстовый мут',    color: '#5b7de8', blocking: false },
+    [ids.punish.chillban]: { type: 'chillban',       label: 'Чилл бан',         color: '#3ab8b8', blocking: false },
+    [ids.punish.eventsBan]: { type: 'events_ban',     label: 'Бан с ивентов',    color: '#c8a84b', blocking: false },
+    [ids.punish.creativeBan]: { type: 'creative_ban',   label: 'Бан с креатива',   color: '#c8a84b', blocking: false },
+    [ids.punish.closeBan]: { type: 'close_ban',      label: 'Бан с клозов',     color: '#c8a84b', blocking: false },
+    [ids.punish.mafiaBan]: { type: 'mafia_ban',      label: 'Бан с мафии',      color: '#c8a84b', blocking: false },
 };
 
 const STAFF_ROLE_BRANCH = {
-    '1500981524974010510': 'helper',
-    '1500981494053732482': 'eventsmod',
-    '1500981524886065232': 'closemod',
-    '1500981493432979586': 'tribunemod',
-    '1500981492858490941': 'creative',
-    '1439557941186269215': 'contentmaker',
-    '1500981491268583464': 'mod',
-    '1500981492015304845': 'sup',
-    '1501238284217749645': 'clanmod',
-    '1500981494900850818': 'mafiamod',
+    [ids.staff.helper]: 'helper',
+    [ids.staff.eventsmod]: 'eventsmod',
+    [ids.staff.closemod]: 'closemod',
+    [ids.staff.tribunemod]: 'tribunemod',
+    [ids.staff.creative]: 'creative',
+    [ids.staff.contentmaker]: 'contentmaker',
+    [ids.staff.mod]: 'mod',
+    [ids.staff.sup]: 'sup',
+    [ids.staff.clanmod]: 'clanmod',
+    [ids.staff.mafiamod]: 'mafiamod',
 };
 
 const BRANCH_LEAD_ROLE = {
-    '1488241971515625593': ['*'],
-    '1500983799016853524': ['mod'],
-    '1488241962422370408': ['sup'],
-    '1488241959255539733': ['creative'],
-    '1488241955103183063': ['helper'],
-    '1488241952876007565': ['tribunemod'],
-    '1488241950455894037': ['eventsmod'],
-    '1488241947196919968': ['mafiamod'],
-    '1488241944282009600': ['closemod'],
-    '1501238347626971217': ['clanmod'],
-    '1488241941383745659': ['contentmaker'],
+    [ids.leads.staff]: ['*'],
+    [ids.leads.mod]: ['mod'],
+    [ids.leads.sup]: ['sup'],
+    [ids.leads.creative]: ['creative'],
+    [ids.leads.helper]: ['helper'],
+    [ids.leads.tribunemod]: ['tribunemod'],
+    [ids.leads.eventsmod]: ['eventsmod'],
+    [ids.leads.mafiamod]: ['mafiamod'],
+    [ids.leads.closemod]: ['closemod'],
+    [ids.leads.clanmod]: ['clanmod'],
+    [ids.leads.contentmaker]: ['contentmaker'],
 };
 
 const ADMIN_ROLES = new Set([
-    '1488241971515625593',
+    ids.leads.staff,
 ]);
 
 const TIER_ROLES = new Set([
-    '1500973129604796426',
-    '1500975136860274909',
-    '1500978606250262568',
-    '1500981127815364709',
+    ids.tiers.administrator,
+    ids.tiers.assistance,
+    ids.tiers.curator,
+    ids.tiers.master,
 ]);
 
-const OWNER_IDS = new Set([
-    '465080369851531265',
-    '1321232444908896338',
-    '550151506289098763',
-]);
+const OWNER_IDS = new Set(ids.owners);
 
-const HOST_ROLE_ID = '1420882652336230511';
+const HOST_ROLE_ID = ids.hostRole;
 
 const STAFF_ROLE_NAMES = {
-    '1500981524974010510': 'Хелпер',
-    '1500981494053732482': 'Ивент мод',
-    '1500981524886065232': 'Клоуз мод',
-    '1500981493432979586': 'Трибун мод',
-    '1500981492858490941': 'Креатив',
-    '1439557941186269215': 'Контентмейкер',
-    '1500981491268583464': 'Модератор',
-    '1500981492015304845': 'Саппорт',
-    '1501238284217749645': 'Клан мод',
-    '1500981494900850818': 'Мафия мод',
-    '1500973129604796426': 'Администратор',
-    '1500975136860274909': 'Заместитель',
-    '1500978606250262568': 'Куратор',
-    '1500981127815364709': 'Мастер',
-    '1488241971515625593': 'Отвечаю за Staff',
-    '1500983799016853524': 'Куратор Mod',
-    '1488241962422370408': 'Куратор Support',
-    '1488241959255539733': 'Куратор Creative',
-    '1488241955103183063': 'Куратор Helper',
-    '1488241952876007565': 'Куратор Tribune',
-    '1488241950455894037': 'Куратор Events',
-    '1488241947196919968': 'Куратор Mafia',
-    '1488241944282009600': 'Куратор Closes',
-    '1501238347626971217': 'Куратор Clans',
-    '1488241941383745659': 'Куратор Content',
+    [ids.staff.helper]: 'Хелпер',
+    [ids.staff.eventsmod]: 'Ивент мод',
+    [ids.staff.closemod]: 'Клоуз мод',
+    [ids.staff.tribunemod]: 'Трибун мод',
+    [ids.staff.creative]: 'Креатив',
+    [ids.staff.contentmaker]: 'Контентмейкер',
+    [ids.staff.mod]: 'Модератор',
+    [ids.staff.sup]: 'Саппорт',
+    [ids.staff.clanmod]: 'Клан мод',
+    [ids.staff.mafiamod]: 'Мафия мод',
+    [ids.tiers.administrator]: 'Администратор',
+    [ids.tiers.assistance]: 'Заместитель',
+    [ids.tiers.curator]: 'Куратор',
+    [ids.tiers.master]: 'Мастер',
+    [ids.leads.staff]: 'Отвечаю за Staff',
+    [ids.leads.mod]: 'Куратор Mod',
+    [ids.leads.sup]: 'Куратор Support',
+    [ids.leads.creative]: 'Куратор Creative',
+    [ids.leads.helper]: 'Куратор Helper',
+    [ids.leads.tribunemod]: 'Куратор Tribune',
+    [ids.leads.eventsmod]: 'Куратор Events',
+    [ids.leads.mafiamod]: 'Куратор Mafia',
+    [ids.leads.closemod]: 'Куратор Closes',
+    [ids.leads.clanmod]: 'Куратор Clans',
+    [ids.leads.contentmaker]: 'Куратор Content',
 };
 
 const POSITION_ROLE_PRIORITY = [
-    { id: '1500966697837002762', name: 'Owner' },
-    { id: '1500968164991963217', name: 'Bless' },
-    { id: '1500973132004065400', name: 'Global' },
-    { id: '1500971455033114654', name: 'Staff Administrator' },
+    { id: ids.positions.owner, name: 'Owner' },
+    { id: ids.positions.bless, name: 'Bless' },
+    { id: ids.positions.global, name: 'Global' },
+    { id: ids.positions.staffAdministrator, name: 'Staff Administrator' },
 ];
 
 const STAFF_TIER_ROLES = {
-    '1488241971515625593': 'Главный по стаффу',
-    '1500973129604796426': 'Администратор',
-    '1500975136860274909': 'Заместитель',
-    '1500978606250262568': 'Куратор',
-    '1500981127815364709': 'Мастер',
+    [ids.leads.staff]: 'Главный по стаффу',
+    [ids.tiers.administrator]: 'Администратор',
+    [ids.tiers.assistance]: 'Заместитель',
+    [ids.tiers.curator]: 'Куратор',
+    [ids.tiers.master]: 'Мастер',
 };
 const STAFF_TIER_PRIORITY = [
-    '1488241971515625593',
-    '1500973129604796426',
-    '1500975136860274909',
-    '1500978606250262568',
-    '1500981127815364709',
+    ids.leads.staff,
+    ids.tiers.administrator,
+    ids.tiers.assistance,
+    ids.tiers.curator,
+    ids.tiers.master,
 ];
 
 const BRANCH_LEAD_BRANCH = {
-    '1500983799016853524': 'mod',
-    '1488241962422370408': 'sup',
-    '1488241959255539733': 'creative',
-    '1488241955103183063': 'helper',
-    '1488241952876007565': 'tribunemod',
-    '1488241950455894037': 'eventsmod',
-    '1488241947196919968': 'mafiamod',
-    '1488241944282009600': 'closemod',
-    '1501238347626971217': 'clanmod',
-    '1488241941383745659': 'contentmaker',
+    [ids.leads.mod]: 'mod',
+    [ids.leads.sup]: 'sup',
+    [ids.leads.creative]: 'creative',
+    [ids.leads.helper]: 'helper',
+    [ids.leads.tribunemod]: 'tribunemod',
+    [ids.leads.eventsmod]: 'eventsmod',
+    [ids.leads.mafiamod]: 'mafiamod',
+    [ids.leads.closemod]: 'closemod',
+    [ids.leads.clanmod]: 'clanmod',
+    [ids.leads.contentmaker]: 'contentmaker',
 };
 
 const BRANCH_DISPLAY_LABEL = {
@@ -424,7 +421,7 @@ async function buildProfile(userId, discord, memberRoleIds) {
 
     const access   = memberRoleIds ? getAccess(memberRoleIds, uid) : { level: 'none', branches: [] };
     const isAdmin  = access.level === 'admin' || [...roles].some(r => TIER_ROLES.has(r));
-    const isMod    = roles.has('1500981491268583464');
+    const isMod    = roles.has(ids.staff.mod);
     const isStaff  = isAdmin || Object.keys(STAFF_ROLE_BRANCH).some(r => roles.has(r)) || POSITION_ROLE_PRIORITY.some(r => roles.has(r.id));
 
     const positionMatch = POSITION_ROLE_PRIORITY.find(r => roles.has(r.id));
@@ -669,10 +666,10 @@ app.get('/api/staff', requireAuth, async (req, res) => {
         if (guildBot && (access.level === 'admin' || access.branches.includes('*'))) {
             try {
                 const EXTRA_ROLES = {
-                    '1500981127815364709': 'master',
-                    '1500978606250262568': 'curator',
-                    '1500975136860274909': 'assistance',
-                    '1500973129604796426': 'administrator',
+                    [ids.tiers.master]: 'master',
+                    [ids.tiers.curator]: 'curator',
+                    [ids.tiers.assistance]: 'assistance',
+                    [ids.tiers.administrator]: 'administrator',
                 };
                 const trackedIds = new Set(parsed.map(m => m.memberId));
                 const { data: allMembers } = await guildBot.get(
@@ -1311,7 +1308,7 @@ app.post('/api/mafia/create', express.json(), (req, res) => {
   res.json({ sessionId, url });
 });
 
-const MAFIA_PROPOSE_CHANNEL = '1501646072014176417';
+const MAFIA_PROPOSE_CHANNEL = ids.channels.mafiaPropose;
 
 app.post('/api/mafia/propose', requireAuth, async (req, res) => {
     const user = req.session.user;
@@ -1345,7 +1342,7 @@ app.post('/api/mafia/propose', requireAuth, async (req, res) => {
     }
 });
 
-const POKER_PROPOSE_CHANNEL = '1488239960501784716';
+const POKER_PROPOSE_CHANNEL = ids.channels.pokerPropose;
 
 app.post('/api/poker/propose', requireAuth, async (req, res) => {
     const user = req.session.user;
