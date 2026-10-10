@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Топы — Talori</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Unbounded:wght@400;700;800;900&family=Noto+Serif+JP:wght@400;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="theme.css" />
+  <style>
+    .page { max-width: 1160px; margin: 0 auto; padding: 48px 32px 80px; position: relative; z-index: 1; }
+
+    .page-header {
+      margin-bottom: 40px; padding-bottom: 36px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    .page-header::after {
+      content: '';
+      position: absolute; bottom: -1px; left: 0;
+      width: 160px; height: 1px;
+      background: linear-gradient(90deg, var(--ink), transparent);
+    }
+    .page-eyebrow {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.3em;
+      text-transform: uppercase; color: var(--ink); margin-bottom: 12px;
+    }
+    .page-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--ink); }
+    .page-title {
+      font-family: 'Unbounded', sans-serif;
+      font-size: clamp(26px, 3.5vw, 42px); font-weight: 900;
+      letter-spacing: -0.015em; line-height: 1.1;
+    }
+    .page-sub { font-size: 15px; color: var(--text-2); margin-top: 10px; }
+
+    .tabs-bar {
+      display: flex; gap: 4px; border-bottom: 1px solid var(--border);
+      margin-bottom: 36px; position: relative;
+    }
+    .tab-btn {
+      font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700;
+      letter-spacing: 0.07em; text-transform: uppercase;
+      color: var(--text-3); background: none; border: none; cursor: pointer;
+      padding: 10px 18px 14px; border-radius: 8px 8px 0 0;
+      transition: color 0.15s; position: relative;
+    }
+    .tab-btn:hover { color: var(--text-2); }
+    .tab-btn.active { color: var(--text); }
+    .tabs-indicator {
+      position: absolute; bottom: -1px; height: 2px;
+      background: var(--ink); border-radius: 2px 2px 0 0;
+      transition: left 0.25s cubic-bezier(.4,0,.2,1), width 0.25s cubic-bezier(.4,0,.2,1);
+    }
+    .tab-pane { display: none; animation: fade-up 0.25s ease both; }
+    .tab-pane.active { display: block; }
+    @keyframes fade-up { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+    @keyframes card-in { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+    @keyframes bar-in { from{width:0} to{} }
+
+    .section-head {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 16px; margin-top: 40px;
+    }
+    .section-head:first-of-type { margin-top: 0; }
+    .section-head-title {
+      font-family: 'Unbounded', sans-serif; font-size: 13px; font-weight: 700;
+      letter-spacing: 0.03em; white-space: nowrap; color: var(--text);
+    }
+    .section-head-line { flex: 1; height: 1px; background: var(--border); }
+    .section-head-count { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3); }
+
+    .rank-table { background: var(--bg-2); border: 1px solid var(--border); border-radius: 2px; overflow: hidden; }
+    .rank-row {
+      display: grid; align-items: center; padding: 13px 22px; gap: 14px;
+      border-bottom: 1px solid var(--border); transition: background .15s;
+    }
+    .rank-row:hover { background: var(--bg-3); }
+    .rank-row:last-child { border-bottom: none; }
+    .rank-row.head { background: transparent !important; cursor: default; }
+    .rank-row.head .rank-col { font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); }
+    .rank-row.top-1 { background: rgba(200,168,75,.04); }
+    .rank-row.top-2 { background: rgba(255,255,255,.02); }
+    .rank-row.top-3 { background: rgba(224,85,85,.03); }
+
+    .rank-pos {
+      font-family: 'Unbounded', sans-serif; font-size: 14px; font-weight: 900;
+      width: 28px; text-align: center; flex-shrink: 0;
+    }
+    .rank-pos.p1 { color: var(--gold); }
+    .rank-pos.p2 { color: #aab4c8; }
+    .rank-pos.p3 { color: #c87a55; }
+    .rank-pos.pn { color: var(--text-3); }
+
+    .rank-player { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .rank-av {
+      width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+      background: var(--bg-4); display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: var(--text-2);
+    }
+    .rank-av.av-gold   { background: linear-gradient(135deg, var(--gold), #a07820); }
+    .rank-av.av-silver { background: linear-gradient(135deg, #b8c4d8, #6a7a8a); }
+    .rank-av.av-bronze { background: linear-gradient(135deg, #c87a55, #7a3a1a); }
+    .rank-name { font-size: 14px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .rank-tag  { font-size: 10px; color: var(--text-3); margin-top: 1px; }
+
+    .rank-col { font-size: 13px; color: var(--text-2); }
+    .rank-val { font-family: 'Unbounded', sans-serif; font-size: 14px; font-weight: 700; color: var(--text); }
+    .rank-val.accent { color: var(--ink); }
+
+    .rank-bar-wrap { display: flex; align-items: center; gap: 10px; }
+    .rank-bar { flex: 1; height: 4px; background: var(--bg-4); border-radius: 3px; overflow: hidden; }
+    .rank-bar-fill { height: 100%; border-radius: 3px; }
+    .rank-pct { font-size: 12px; font-weight: 700; min-width: 38px; text-align: right; }
+
+    .badge-inline {
+      font-size: 9px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+      padding: 2px 7px; border-radius: 4px; white-space: nowrap; margin-left: 6px;
+    }
+
+    .general-row { grid-template-columns: 28px 1fr 100px 100px 120px; }
+
+    .mafia-top-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-bottom: 32px; }
+    .mafia-stat-card {
+      background: var(--bg-2); border: 1px solid var(--border); border-radius: 2px;
+      padding: 18px 20px; transition: border-color .2s;
+      animation: card-in 0.35s ease both;
+    }
+    .mafia-stat-card:hover { border-color: var(--border-h); }
+    .mafia-stat-label { font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--text-3); margin-bottom: 8px; }
+    .mafia-stat-val { font-family: 'Unbounded', sans-serif; font-size: 26px; font-weight: 900; color: var(--text); line-height: 1; }
+    .mafia-stat-sub { font-size: 11px; color: var(--text-3); margin-top: 4px; }
+
+    .mafia-row { grid-template-columns: 28px 1fr 80px 80px 90px 1fr; }
+    @media(max-width:900px){ .mafia-row { grid-template-columns: 28px 1fr 80px 90px; } .mafia-row .hide-md { display:none; } }
+
+    .role-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 7px; flex-shrink: 0; }
+
+    .rc-mir     { background: var(--blue); }
+    .rc-maf     { background: var(--red); }
+    .rc-kom     { background: var(--teal); }
+    .rc-doc     { background: var(--green); }
+    .rc-don     { background: #e05555; }
+    .rc-put     { background: var(--purple); }
+    .rc-ved     { background: #9e6aff; }
+    .rc-tel     { background: var(--gold); }
+    .rc-vet     { background: #e8a03b; }
+    .rc-man     { background: #e85b5b; }
+    .rc-shu     { background: var(--ink); }
+    .rc-pal     { background: #888; }
+    .rc-oho     { background: var(--green); }
+
+    .sub-tabs-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 28px; }
+    .sub-tab-btn {
+      font-size: 11px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+      padding: 6px 14px; border-radius: 4px; cursor: pointer;
+      background: var(--bg-3); border: 1px solid var(--border); color: var(--text-3);
+      transition: background .15s, color .15s, border-color .15s;
+    }
+    .sub-tab-btn:hover { color: var(--text-2); border-color: var(--border-h); }
+    .sub-tab-btn.active { background: var(--bg-4); border-color: var(--border-h); color: var(--text); }
+    .sub-pane { display: none; animation: fade-up 0.2s ease both; }
+    .sub-pane.active { display: block; }
+
+    .closes-row { grid-template-columns: 28px 1fr 70px 80px 90px 120px; }
+    @media(max-width:900px){ .closes-row { grid-template-columns: 28px 1fr 70px 90px; } .closes-row .hide-md { display:none; } }
+
+    .clan-row { grid-template-columns: 28px 1fr 70px 80px 90px 100px; }
+    .clan-tag {
+      font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+      padding: 2px 8px; border-radius: 5px; white-space: nowrap;
+      background: var(--purple-dim); color: var(--purple);
+    }
+    .clan-member-pips { display: flex; gap: 3px; align-items: center; }
+    .pip { width: 6px; height: 6px; border-radius: 1px; background: var(--bg-4); }
+    .pip.on { background: var(--green); }
+
+    .eco-row { grid-template-columns: 28px 1fr 100px 100px 120px; }
+
+    .podium { display: flex; align-items: flex-end; justify-content: center; gap: 16px; margin-bottom: 40px; }
+    .podium-slot { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .podium-av {
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-weight: 800; color: white;
+    }
+    .podium-av.p1 { width: 72px; height: 72px; font-size: 20px; background: linear-gradient(135deg, var(--gold), #a07820); border: 3px solid var(--gold); }
+    .podium-av.p2 { width: 58px; height: 58px; font-size: 16px; background: linear-gradient(135deg, #b8c4d8, #6a7a8a); border: 2px solid #aab4c8; }
+    .podium-av.p3 { width: 50px; height: 50px; font-size: 14px; background: linear-gradient(135deg, #c87a55, #7a3a1a); border: 2px solid #c87a55; }
+    .podium-name { font-size: 13px; font-weight: 700; color: var(--text); }
+    .podium-val { font-family: 'Unbounded', sans-serif; font-size: 11px; font-weight: 700; color: var(--text-3); }
+    .podium-block {
+      border-radius: 10px 10px 0 0; width: 100%; min-width: 120px; text-align: center;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Unbounded', sans-serif; font-size: 22px; font-weight: 900;
+    }
+    .podium-block.b1 { height: 90px; background: linear-gradient(180deg, var(--gold-dim), transparent); color: var(--gold); }
+    .podium-block.b2 { height: 64px; background: linear-gradient(180deg, rgba(170,180,200,.08), transparent); color: #aab4c8; }
+    .podium-block.b3 { height: 48px; background: linear-gradient(180deg, rgba(200,122,85,.06), transparent); color: #c87a55; }
+
+    .page-title{font-size:clamp(38px,5.5vw,68px)!important;letter-spacing:-.025em!important;line-height:.92!important}
+    .page-header{margin-bottom:52px;padding-bottom:44px}
+    .tabs-bar{padding:4px 0;gap:2px;margin-bottom:44px}
+    .tab-btn{font-size:11px!important;padding:12px 20px 16px!important;letter-spacing:.1em!important}
+    .tabs-indicator{height:2px;background:var(--ink)!important;bottom:0}
+    .rank-table{border-radius:10px!important}
+    .rank-av{width:42px!important;height:42px!important;border-radius:8px!important;font-size:13px!important}
+    .rank-name{font-size:15px!important;font-weight:700!important}
+    .rank-val{font-size:15px!important}
+    .rank-row{padding:15px 24px!important}
+    .rank-row.top-1{background:rgba(200,168,75,.07)!important;border-left:2px solid var(--gold)!important}
+    .rank-row.top-2{background:rgba(170,180,200,.04)!important;border-left:2px solid #aab4c8!important}
+    .rank-row.top-3{background:rgba(200,122,85,.04)!important;border-left:2px solid #c87a55!important}
+    .rank-row:hover{background:rgba(200,184,154,.04)!important}
+    .rank-row.top-1:hover{background:rgba(200,168,75,.11)!important}
+    .section-head-title{font-size:14px!important;letter-spacing:.04em}
+    .section-head{margin-top:48px!important}
+    .section-head:first-of-type{margin-top:0!important}
+    .podium{margin-bottom:52px!important;gap:14px!important;padding:24px 16px!important;background:rgba(200,184,154,.02);border:1px solid var(--border);border-radius:12px}
+    .podium-av.p1{width:80px!important;height:80px!important;font-size:22px!important;border-radius:14px!important}
+    .podium-av.p2{width:64px!important;height:64px!important;font-size:18px!important;border-radius:12px!important}
+    .podium-av.p3{width:56px!important;height:56px!important;font-size:15px!important;border-radius:10px!important}
+    .podium-name{font-size:14px!important;font-weight:700!important}
+    .podium-val{font-size:12px!important}
+    .podium-block.b1{height:110px!important;border-radius:12px 12px 0 0!important;font-size:26px!important}
+    .podium-block.b2{height:80px!important;border-radius:10px 10px 0 0!important}
+    .podium-block.b3{height:60px!important;border-radius:8px 8px 0 0!important}
+    .mafia-stat-card{padding:22px 24px!important;border-radius:10px!important}
+    .mafia-stat-val{font-size:30px!important}
+    @media(max-width:768px){
+      .nav-links { display: none; }
+      .page { padding: 32px 16px 60px; }
+      .general-row { grid-template-columns: 28px 1fr 90px; }
+      .general-row .hide-sm { display: none; }
+      .podium { gap: 8px; }
+      .podium-block { min-width: 80px; }
+      .mafia-top-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-bg" aria-hidden="true"></div>
+
+  <nav class="site-nav">
+    <div class="site-nav-inner">
+      <a href="/" class="site-nav-logo">
+        <img src="/Talori1.png" alt="Talori"/>
+        <span>
+          <span class="site-nav-logo-text">TALORI</span>
+          <span class="site-nav-logo-sub">コミュニティ</span>
+        </span>
+      </a>
+      <div class="site-nav-links">
+        <a href="/events.html" data-jp="イベント">СОБЫТИЯ</a>
+        <a href="/leaderboard.html" data-jp="ランキング" class="active">ТОПЫ</a>
+        <a href="/mafia.html" data-jp="マフィア">МАФИЯ</a>
+        <a href="/poker.html" data-jp="ポーカー">ПОКЕР</a>
+        <a href="/clan.html" data-jp="クラン">КЛАНЫ</a>
+        <a href="/staff.html" data-jp="スタッフ">СТАФФ</a>
+      </div>
+      <div class="site-nav-right" id="nav-right">
+      </div>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <div class="page-header">
+      <div class="page-eyebrow">Таблицы славы</div>
+      <h1 class="page-title">РЕЙТИНГИ
+        <span style="display:block;font-family:'Noto Serif JP',serif;font-weight:400;font-size:clamp(18px,2.4vw,30px);letter-spacing:.3em;color:var(--ink-dim);margin-top:8px">ランキング · 名誉</span>
+      </h1>
+      <p class="page-sub">Лучшие игроки, кланы и экономика сервера</p>
+    </div>
+
+    <div class="tabs-bar" id="mainTabs">
+      <button class="tab-btn active" data-tab="general">Общий</button>
+      <button class="tab-btn" data-tab="mafia">Мафия</button>
+      <button class="tab-btn" data-tab="closes">Closes</button>
+      <button class="tab-btn" data-tab="clans">Кланы</button>
+      <button class="tab-btn" data-tab="eco">Экономика</button>
+      <button class="tab-btn" data-tab="voice">Голос</button>
+      <button class="tab-btn" data-tab="messages">Сообщения</button>
+      <div class="tabs-indicator" id="tabsIndicator"></div>
+    </div>
+
+    <div class="tab-pane active" id="pane-general">
+      <div id="general-podium" class="podium"></div>
+      <div class="section-head">
+        <div class="section-head-title">Таблица рейтинга</div>
+        <div class="section-head-line"></div>
+        <div class="section-head-count" id="general-count"></div>
+      </div>
+      <div class="rank-table">
+        <div class="rank-row head general-row">
+          <div class="rank-col">#</div>
+          <div class="rank-col">Игрок</div>
+          <div class="rank-col hide-sm">Голос</div>
+          <div class="rank-col hide-sm">Сообщ.</div>
+          <div class="rank-col">Опыт</div>
+        </div>
+        <div id="general-rows"><div style="color:var(--text-3);padding:32px 0;text-align:center;font-size:13px">Загрузка...</div></div>
+      </div>
+    </div>
+
+    <div class="tab-pane" id="pane-mafia">
+      <div class="mafia-top-grid" id="mafia-stats-grid">
+        <div style="color:var(--text-3);padding:32px 0;font-size:13px">Загрузка...</div>
+      </div>
+
+    </div>
+
+    <div class="tab-pane" id="pane-closes">
+      <div style="color:var(--text-3);padding:60px 0;text-align:center;font-size:13px">
+        Статистика клозов по игрокам пока не отслеживается на сайте
+      </div>
+    </div>
+
+    <div class="tab-pane" id="pane-clans">
+      <div class="section-head" style="margin-top:0">
+        <div class="section-head-title">Рейтинг кланов</div>
+        <div class="section-head-line"></div>
+        <div class="section-head-count" id="clans-count"></div>
+      </div>
+      <div class="rank-table">
+        <div class="rank-row head" style="grid-template-columns:28px 1fr 90px 60px 110px">
+          <div class="rank-col">#</div>
+          <div class="rank-col">Клан</div>
+          <div class="rank-col">Участников</div>
+          <div class="rank-col">Ур.</div>
+          <div class="rank-col">Рейтинг</div>
+        </div>
+        <div id="clans-rows"><div style="color:var(--text-3);padding:32px 0;text-align:center;font-size:13px">Загрузка...</div></div>
+      </div>
+    </div>
+
+    <div class="tab-pane" id="pane-eco">
+      <div class="section-head" style="margin-top:0">
+        <div class="section-head-title">Богатейшие игроки</div>
+        <div class="section-head-line"></div>
+        <div class="section-head-count">по балансу</div>
+      </div>
+      <div class="rank-table">
+        <div class="rank-row head eco-row">
+          <div class="rank-col">#</div>
+          <div class="rank-col">Игрок</div>
+          <div class="rank-col">Баланс</div>
+          <div class="rank-col">Реп.</div>
+          <div class="rank-col">Опыт</div>
+        </div>
+        <div id="eco-rows"><div style="color:var(--text-3);padding:32px 0;text-align:center;font-size:13px">Загрузка...</div></div>
+      </div>
+    </div>
+
+    <div class="tab-pane" id="pane-voice">
+      <div class="section-head" style="margin-top:0">
+        <div class="section-head-title">Топ по голосу</div>
+        <div class="section-head-line"></div>
+        <div class="section-head-count" id="voice-count"></div>
+      </div>
+      <div class="rank-table">
+        <div class="rank-row head" style="grid-template-columns:28px 1fr 130px 100px">
+          <div class="rank-col">#</div>
+          <div class="rank-col">Игрок</div>
+          <div class="rank-col">Голос</div>
+          <div class="rank-col">Сообщ.</div>
+        </div>
+        <div id="voice-rows"><div style="color:var(--text-3);padding:32px 0;text-align:center;font-size:13px">Загрузка...</div></div>
+      </div>
+    </div>
+
+    <div class="tab-pane" id="pane-messages">
+      <div class="section-head" style="margin-top:0">
+        <div class="section-head-title">Топ по сообщениям</div>
+        <div class="section-head-line"></div>
+        <div class="section-head-count" id="messages-count"></div>
+      </div>
+      <div class="rank-table">
+        <div class="rank-row head" style="grid-template-columns:28px 1fr 130px 100px">
+          <div class="rank-col">#</div>
+          <div class="rank-col">Игрок</div>
+          <div class="rank-col">Сообщений</div>
+          <div class="rank-col">Голос</div>
+        </div>
+        <div id="messages-rows"><div style="color:var(--text-3);padding:32px 0;text-align:center;font-size:13px">Загрузка...</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <div class="site-footer-brand">
+        <a href="/" class="site-footer-logo">
+          <img src="/Talori1.png" alt="Talori"/>
+          <span class="site-footer-logo-text">TALORI</span>
+        </a>
+        <p class="site-footer-desc">Японское ноир-комьюнити в Discord. Мафия, события, кланы — всё на одном сервере.</p>
+      </div>
+      <div>
+        <div class="site-footer-col-title">Навигация</div>
+        <div class="site-footer-links">
+          <a href="/events.html">События</a>
+          <a href="/leaderboard.html">Рейтинги</a>
+          <a href="/mafia.html">Мафия</a>
+          <a href="/clan.html">Кланы</a>
+          <a href="/staff.html">Состав</a>
+        </div>
+      </div>
+      <div>
+        <div class="site-footer-col-title">Аккаунт</div>
+        <div class="site-footer-links">
+          <a href="/profile.html">Профиль</a>
+          <a href="/auth/login">Войти через Discord</a>
+          <a href="/auth/logout">Выйти</a>
+        </div>
+      </div>
+    </div>
+    <div class="site-footer-bottom">
+      <span class="site-footer-copy">© MMXXVI TALORI · ALL RIGHTS RESERVED</span>
+      <span class="site-footer-kanji">武道の道は永遠に</span>
+    </div>
+  </footer>
+
+  <script>
+    (function() {
+      const bar = document.getElementById('mainTabs');
+      const indicator = document.getElementById('tabsIndicator');
+      const btns = bar.querySelectorAll('.tab-btn');
+
+      function moveIndicator(btn) {
+        indicator.style.left  = btn.offsetLeft + 'px';
+        indicator.style.width = btn.offsetWidth + 'px';
+      }
+
+      btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          btns.forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+          btn.classList.add('active');
+          document.getElementById('pane-' + btn.dataset.tab).classList.add('active');
+          moveIndicator(btn);
+          loadTab(btn.dataset.tab);
+        });
+      });
+
+      const active = bar.querySelector('.tab-btn.active');
+      if (active) moveIndicator(active);
+      window.addEventListener('resize', () => {
+        const a = bar.querySelector('.tab-btn.active');
+        if (a) moveIndicator(a);
+      });
+    })();
+
+    function avUrl(id, hash) { return hash ? `https://cdn.discordapp.com/avatars/${id}/${hash}.png?size=64` : null; }
+    function inits(name) { return (name || '?').split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2); }
+    function fmtNum(n) { return Number(n || 0).toLocaleString('ru-RU'); }
+    function fmtVoice(s) {
+      const h = Math.floor((s || 0) / 3600), m = Math.floor(((s || 0) % 3600) / 60);
+      return h > 0 ? `${h}ч ${m}м` : m > 0 ? `${m}м` : '—';
+    }
+    function avEl(id, hash, username, cls) {
+      const url = avUrl(id, hash);
+      return url
+        ? `<div class="rank-av ${cls || ''}" style="background:url(${url}) center/cover no-repeat;overflow:hidden;"></div>`
+        : `<div class="rank-av ${cls || ''}">${inits(username)}</div>`;
+    }
+    function posClass(r) { return r === 1 ? 'p1' : r === 2 ? 'p2' : r === 3 ? 'p3' : 'pn'; }
+    function avClass(r)  { return r === 1 ? 'av-gold' : r === 2 ? 'av-silver' : r === 3 ? 'av-bronze' : ''; }
+    function rowClass(r) { return r === 1 ? 'top-1' : r === 2 ? 'top-2' : r === 3 ? 'top-3' : ''; }
+
+    const loaded = new Set();
+    async function loadTab(tab) {
+      if (loaded.has(tab) || tab === 'closes') return;
+      loaded.add(tab);
+      try {
+        const r = await fetch(`/api/leaderboard?tab=${tab}`);
+        if (!r.ok) throw new Error(r.status);
+        const data = await r.json();
+        if (tab === 'general')   renderGeneral(data);
+        else if (tab === 'mafia')    renderMafia(data);
+        else if (tab === 'clans')    renderClans(data);
+        else if (tab === 'eco')      renderEco(data);
+        else if (tab === 'voice')    renderVoice(data);
+        else if (tab === 'messages') renderMessages(data);
+      } catch (e) {
+        console.error('leaderboard error', tab, e);
+      }
+    }
+
+    function renderGeneral(players) {
+      const pod = document.getElementById('general-podium');
+      if (players.length > 0) {
+        const order = [players[1], players[0], players[2]].filter(Boolean);
+        const posNums = [2, 1, 3];
+        const bCls = ['b2', 'b1', 'b3'];
+        const aCls = ['p2', 'p1', 'p3'];
+        pod.innerHTML = order.map((pl, i) => {
+          const url = avUrl(pl.id, pl.avatar);
+          const av = url
+            ? `<div class="podium-av ${aCls[i]}" style="background:url(${url}) center/cover;"></div>`
+            : `<div class="podium-av ${aCls[i]}">${inits(pl.username)}</div>`;
+          return `<div class="podium-slot">${av}<div class="podium-name">${pl.username}</div><div class="podium-val">${fmtNum(pl.exp)} XP</div><div class="podium-block ${bCls[i]}">${posNums[i]}</div></div>`;
+        }).join('');
+      }
+      const countEl = document.getElementById('general-count');
+      if (countEl) countEl.textContent = `${players.length} игроков`;
+      const rows = document.getElementById('general-rows');
+      rows.innerHTML = players.slice(3).map(pl => `
+        <div class="rank-row general-row ${rowClass(pl.rank)}">
+          <div class="rank-pos ${posClass(pl.rank)}">${pl.rank}</div>
+          <div class="rank-player">${avEl(pl.id, pl.avatar, pl.username, avClass(pl.rank))}<div><div class="rank-name">${pl.username}</div></div></div>
+          <div class="rank-col hide-sm">${fmtVoice(pl.voiceTime)}</div>
+          <div class="rank-col hide-sm">${fmtNum(pl.messages)}</div>
+          <div class="rank-val accent">${fmtNum(pl.exp)}</div>
+        </div>`).join('') || noData();
+    }
+
+    function renderMafia(stats) {
+      const total = stats.totalGames || 0;
+      const pct = (n) => total ? ` <div class="mafia-stat-sub">${Math.round(n / total * 100)}% от игр</div>` : '';
+      document.getElementById('mafia-stats-grid').innerHTML = [
+        { label: 'Всего игр',      val: fmtNum(total),                  color: 'var(--text)',   sub: '' },
+        { label: 'Побед города',   val: fmtNum(stats.townWins),         color: 'var(--blue)',   sub: pct(stats.townWins) },
+        { label: 'Побед мафии',    val: fmtNum(stats.mafiaWins),        color: 'var(--red)',    sub: pct(stats.mafiaWins) },
+        { label: 'Побед маньяка',  val: fmtNum(stats.maniacWins),       color: 'var(--purple)', sub: pct(stats.maniacWins) },
+        { label: 'Побед шута',     val: fmtNum(stats.jesterWins),       color: 'var(--gold)',   sub: pct(stats.jesterWins) },
+        { label: 'Побед экзекут.', val: fmtNum(stats.executionerWins),  color: 'var(--teal)',   sub: pct(stats.executionerWins) },
+      ].map(c => `<div class="mafia-stat-card"><div class="mafia-stat-label">${c.label}</div><div class="mafia-stat-val" style="color:${c.color}">${c.val}</div>${c.sub}</div>`).join('');
+    }
+
+    function renderClans(clans) {
+      const countEl = document.getElementById('clans-count');
+      if (countEl) countEl.textContent = `${clans.length} кланов`;
+      const rows = document.getElementById('clans-rows');
+      rows.innerHTML = clans.map(c => {
+        const ci = inits(c.clanName);
+        const color = c.clanColor ? `#${Number(c.clanColor).toString(16).padStart(6, '0')}` : null;
+        const avStyle = color
+          ? `background:${color};color:#fff;border-radius:8px`
+          : `background:var(--purple-dim);color:var(--purple);border-radius:8px`;
+        return `
+        <a href="/clan.html?id=${c.id}" class="rank-row ${rowClass(c.rank)}" style="grid-template-columns:28px 1fr 90px 60px 110px;text-decoration:none;display:grid;color:inherit;cursor:pointer">
+          <div class="rank-pos ${posClass(c.rank)}">${c.rank}</div>
+          <div class="rank-player">
+            <div class="rank-av" style="${avStyle}">${ci}</div>
+            <div><div class="rank-name">${c.clanName}</div><div class="rank-tag">Основатель: ${c.owner?.username || '—'}</div></div>
+          </div>
+          <div class="rank-col">${c.memberCount} / ${c.maxMembers}</div>
+          <div class="rank-col">Ур. ${c.clanLevel || 1}</div>
+          <div class="rank-val accent">${fmtNum(c.clanRating)}</div>
+        </a>`;
+      }).join('') || noData();
+    }
+
+    function renderEco(players) {
+      const rows = document.getElementById('eco-rows');
+      rows.innerHTML = players.map(pl => {
+        const rep = pl.rep || 0;
+        const repColor = rep > 0 ? 'var(--green)' : rep < 0 ? 'var(--red)' : 'var(--text-3)';
+        return `
+        <div class="rank-row eco-row ${rowClass(pl.rank)}">
+          <div class="rank-pos ${posClass(pl.rank)}">${pl.rank}</div>
+          <div class="rank-player">${avEl(pl.id, pl.avatar, pl.username, avClass(pl.rank))}<div><div class="rank-name">${pl.username}</div></div></div>
+          <div class="rank-val accent" style="font-size:13px">${fmtNum(pl.balance)}</div>
+          <div class="rank-col" style="color:${repColor}">${rep > 0 ? '+' : ''}${rep}</div>
+          <div class="rank-col">${fmtNum(pl.exp)} XP</div>
+        </div>`;
+      }).join('') || noData();
+    }
+
+    function renderVoice(players) {
+      const countEl = document.getElementById('voice-count');
+      if (countEl) countEl.textContent = `${players.length} игроков`;
+      const rows = document.getElementById('voice-rows');
+      rows.innerHTML = players.map(pl => `
+        <div class="rank-row ${rowClass(pl.rank)}" style="grid-template-columns:28px 1fr 130px 100px">
+          <div class="rank-pos ${posClass(pl.rank)}">${pl.rank}</div>
+          <div class="rank-player">${avEl(pl.id, pl.avatar, pl.username, avClass(pl.rank))}<div><div class="rank-name">${pl.username}</div></div></div>
+          <div class="rank-val accent">${fmtVoice(pl.voiceTime)}</div>
+          <div class="rank-col">${fmtNum(pl.messages)}</div>
+        </div>`).join('') || noData();
+    }
+
+    function renderMessages(players) {
+      const countEl = document.getElementById('messages-count');
+      if (countEl) countEl.textContent = `${players.length} игроков`;
+      const rows = document.getElementById('messages-rows');
+      rows.innerHTML = players.map(pl => `
+        <div class="rank-row ${rowClass(pl.rank)}" style="grid-template-columns:28px 1fr 130px 100px">
+          <div class="rank-pos ${posClass(pl.rank)}">${pl.rank}</div>
+          <div class="rank-player">${avEl(pl.id, pl.avatar, pl.username, avClass(pl.rank))}<div><div class="rank-name">${pl.username}</div></div></div>
+          <div class="rank-val accent">${fmtNum(pl.messages)}</div>
+          <div class="rank-col">${fmtVoice(pl.voiceTime)}</div>
+        </div>`).join('') || noData();
+    }
+
+    function noData() {
+      return `<div style="color:var(--text-3);padding:32px 0;text-align:center;font-size:13px">Нет данных</div>`;
+    }
+
+    loadTab('general');
+  </script>
+  <script src="/auth.js"></script>
+  <script>
+(async () => {
+  try {
+    const r = await fetch('/api/me');
+    if (!r.ok) throw new Error();
+    const me = await r.json();
+    document.getElementById('nav-right').innerHTML = `
+      <a href="/profile.html" class="site-nav-user" style="text-decoration:none">
+        ${me.avatar ? `<img class="site-nav-avatar" src="https://cdn.discordapp.com/avatars/${me.id}/${me.avatar}.webp?size=64" alt="">` : ''}
+        <span class="site-nav-username">${me.username}</span>
+      </a>
+      <a href="/auth/logout" class="site-nav-btn">Выйти</a>`;
+  } catch {
+    document.getElementById('nav-right').innerHTML = `<a href="/auth/login?redirect=${encodeURIComponent(location.pathname)}" class="site-nav-btn"><span class="site-nav-btn-dot"></span>Войти</a>`;
+  }
+})();
+  </script>
+</body>
+</html>

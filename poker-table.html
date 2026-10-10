@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Talori · Покерный стол</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Unbounded:wght@400;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Noto+Serif+JP:wght@700;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#040305;
+  --felt:#0e1a14; --felt-2:#0a1410; --felt-edge:#05100b;
+  --text:#f3f1ec; --text-2:#9a958c; --text-3:#5a564f;
+  --ink:#c8b89a; --ink-dim:rgba(200,184,154,.55);
+  --crimson:#a83838; --crimson-soft:#ec8080;
+  --gold:#d3b25a; --green:#54b487;
+  --line:rgba(243,241,236,.10); --line-h:rgba(243,241,236,.22);
+  --card-r:7px;
+}
+html,body{height:100%;overflow:hidden;background:#000;color:var(--text)}
+body{font-family:'Inter',sans-serif;font-size:14px;-webkit-font-smoothing:antialiased;user-select:none;
+  text-rendering:optimizeLegibility}
+
+.bg{position:fixed;inset:0;z-index:0;
+  background:radial-gradient(ellipse 80% 60% at 50% 38%,#13201a 0%,#0a100d 52%,#040305 100%)}
+.bg-kanji{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:0;
+  font-family:'Noto Serif JP',serif;font-weight:900;font-size:min(58vh,52vw);
+  color:rgba(200,184,154,.018);pointer-events:none;user-select:none}
+.vignette{position:fixed;inset:0;z-index:8;pointer-events:none;
+  background:radial-gradient(ellipse 100% 86% at 50% 44%,transparent 52%,rgba(0,0,0,.66) 100%)}
+
+.bar{position:fixed;top:0;left:0;right:0;z-index:30;height:58px;
+  display:flex;align-items:center;justify-content:space-between;padding:0 22px;
+  background:linear-gradient(to bottom,rgba(4,3,5,.9),transparent)}
+.bar-l{display:flex;align-items:center;gap:14px}
+.bar-logo{font-family:'Unbounded',sans-serif;font-weight:900;font-size:15px;letter-spacing:.16em}
+.bar-tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.26em;color:var(--ink-dim);text-transform:uppercase}
+.bar-r{display:flex;align-items:center;gap:18px;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.06em;color:var(--text-2)}
+.bar-stat{display:flex;align-items:center;gap:7px}
+.bar-stat b{color:var(--text);font-weight:600;font-family:'Unbounded',sans-serif;font-size:12px}
+.bar-stat .lbl{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-3)}
+.bar-exit{color:var(--text-3);text-decoration:none;border:1px solid var(--line);padding:8px 14px;border-radius:5px;
+  font-size:10px;letter-spacing:.18em;text-transform:uppercase;transition:.2s}
+.bar-exit:hover{color:var(--crimson-soft);border-color:rgba(168,56,56,.4)}
+
+.stage{position:fixed;inset:58px 0 0;z-index:1;display:flex;flex-direction:column}
+.table-wrap{position:relative;flex:1 1 auto;min-height:0;width:min(96vw,1180px);margin:0 auto;align-self:center;width:100%;max-width:1180px}
+.felt{position:absolute;inset:5% 5% 7%;
+  border-radius:46% / 52%;
+  background:radial-gradient(ellipse at 50% 40%,var(--felt) 0%,var(--felt-2) 60%,var(--felt-edge) 100%);
+  border:1.5px solid rgba(200,184,154,.2);
+  box-shadow:0 0 0 13px #0b0a09, 0 0 0 14px rgba(200,184,154,.12),
+    0 40px 110px rgba(0,0,0,.7), inset 0 0 130px rgba(0,0,0,.6)}
+.felt::before{content:'';position:absolute;inset:30px;border-radius:48% / 50%;
+  border:1px solid rgba(200,184,154,.06)}
+.felt-mark{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-family:'Noto Serif JP',serif;font-weight:900;font-size:clamp(90px,15vh,170px);
+  color:rgba(200,184,154,.03);pointer-events:none}
+
+.center{position:absolute;top:27%;left:50%;transform:translateX(-50%);z-index:4;
+  display:flex;flex-direction:column;align-items:center;gap:9px;width:90%}
+.pot{display:flex;flex-direction:column;align-items:center;gap:2px}
+.pot-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--ink-dim)}
+.pot-val{font-family:'Unbounded',sans-serif;font-weight:800;font-size:clamp(26px,4.6vh,40px);color:var(--gold);letter-spacing:-.01em;
+  text-shadow:0 0 30px rgba(211,178,90,.25)}
+.pot-cur{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--text-3)}
+.board{display:flex;gap:9px;justify-content:center;align-items:center}
+.card{width:clamp(58px,8.6vh,88px);aspect-ratio:768/1076;border-radius:var(--card-r);
+  background-size:cover;background-position:center;
+  box-shadow:0 10px 26px rgba(0,0,0,.6);
+  outline:2px solid transparent;outline-offset:1px;
+  transition:outline-color .25s,box-shadow .25s,transform .25s,opacity .25s}
+.board .card{animation:deal .3s cubic-bezier(.22,1,.36,1)}
+.card.combo{outline-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 0 26px rgba(211,178,90,.5),0 10px 26px rgba(0,0,0,.6);transform:translateY(-6px)}
+.card.dim{opacity:.42}
+.board .slot{width:clamp(58px,8.6vh,88px);aspect-ratio:768/1076;border-radius:var(--card-r);
+  border:1.5px dashed rgba(200,184,154,.16);background:rgba(0,0,0,.18)}
+@keyframes deal{from{opacity:.2;transform:translateY(-10px) scale(.94)}to{opacity:1;transform:none}}
+.phase-pill{display:inline-flex;align-items:center;gap:9px;font-family:'JetBrains Mono',monospace;
+  font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--crimson-soft);
+  border:1px solid rgba(168,56,56,.34);border-radius:30px;padding:6px 16px;background:rgba(168,56,56,.06)}
+.phase-pill .dot{width:6px;height:6px;border-radius:50%;background:var(--crimson-soft);box-shadow:0 0 9px var(--crimson-soft)}
+.phase-pill.WAITING{color:var(--text-3);border-color:var(--line);background:transparent}
+.phase-pill.WAITING .dot{background:var(--text-3);box-shadow:none}
+.phase-pill.SHOWDOWN{color:var(--gold);border-color:rgba(211,178,90,.4);background:rgba(211,178,90,.07)}
+.phase-pill.SHOWDOWN .dot{background:var(--gold);box-shadow:0 0 9px var(--gold)}
+
+.seats{position:absolute;inset:0;z-index:5;pointer-events:none}
+.seat{position:absolute;transform:translate(-50%,-50%);width:158px;pointer-events:auto;
+  transition:opacity .25s,filter .25s}
+.seat-body{position:relative;background:rgba(9,13,11,.86);border:1px solid var(--line);border-radius:13px;
+  padding:8px 11px 9px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  transition:border-color .25s,box-shadow .25s}
+.seat.acting .seat-body{border-color:var(--gold);
+  box-shadow:0 0 0 1px var(--gold),0 0 30px rgba(211,178,90,.4)}
+.seat.acting .seat-body::after{content:'';position:absolute;inset:-1px;border-radius:14px;
+  border:1px solid rgba(211,178,90,.5);animation:actPulse 1.4s ease-in-out infinite;pointer-events:none}
+@keyframes actPulse{0%,100%{opacity:.7}50%{opacity:.15}}
+.seat.folded{opacity:.34;filter:grayscale(.7)}
+.seat.empty .seat-body{border-style:dashed;opacity:.5}
+.seat-top{display:flex;align-items:center;gap:9px;margin-bottom:6px}
+.seat-av{width:32px;height:32px;border-radius:50%;flex-shrink:0;background:#191a1e center/cover;
+  border:1px solid var(--line-h);display:flex;align-items:center;justify-content:center;
+  font-family:'Unbounded',sans-serif;font-size:12px;font-weight:800;color:var(--ink)}
+.seat-meta{text-align:left;min-width:0;flex:1}
+.seat-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}
+.seat-chips{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--gold);margin-top:1px}
+.seat-cards{display:flex;justify-content:center;gap:4px;min-height:48px;align-items:center}
+.seat-cards .card{width:34px;box-shadow:0 6px 16px rgba(0,0,0,.55)}
+.seat-wait{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-3)}
+.seat-act{margin-top:5px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:9px;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--text-3);min-height:11px}
+.seat-bet{position:absolute;left:50%;transform:translateX(-50%);bottom:-16px;
+  font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--text);
+  background:rgba(168,56,56,.2);border:1px solid rgba(168,56,56,.45);border-radius:30px;
+  padding:3px 13px;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.seat-bet::before{content:'';width:7px;height:7px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#f0c25a,#a8762a);box-shadow:0 0 6px rgba(211,178,90,.5)}
+.seat-dealer{position:absolute;top:-9px;right:-9px;width:26px;height:26px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#fff,var(--ink));color:#0a0a0a;font-family:'Unbounded',sans-serif;
+  font-weight:900;font-size:12px;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 3px 10px rgba(0,0,0,.6)}
+
+.dock{position:relative;z-index:20;flex:0 0 auto;
+  display:flex;flex-direction:column;align-items:center;gap:8px;padding:4px 18px 16px;
+  background:linear-gradient(to top,rgba(4,3,5,.96) 55%,transparent)}
+
+.turn-cue{display:flex;align-items:center;gap:12px;font-family:'JetBrains Mono',monospace;
+  font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);
+  opacity:0;transform:translateY(6px);transition:opacity .25s,transform .25s;min-height:14px}
+.turn-cue.show{opacity:1;transform:none}
+.turn-cue .ln{width:30px;height:1px;background:var(--gold);opacity:.5}
+
+.myzone{display:flex;align-items:flex-end;gap:22px}
+.myhand{display:flex;gap:10px;align-items:flex-end;min-height:8px}
+.myhand .card{width:clamp(70px,10.5vh,108px);box-shadow:0 18px 44px rgba(0,0,0,.62);cursor:default}
+.myhand .card.combo{transform:translateY(-10px)}
+.my-readout{display:flex;flex-direction:column;gap:6px;padding-bottom:6px}
+.my-hand-name{font-family:'Unbounded',sans-serif;font-weight:700;font-size:16px;color:var(--text);min-height:20px;line-height:1.1}
+.my-hand-name span{color:var(--gold)}
+.my-stack{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.04em;color:var(--text-2)}
+.my-stack b{color:var(--gold);font-weight:600}
+
+.actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;min-height:54px;align-items:center}
+.act{font-family:'Inter',sans-serif;font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;
+  padding:0 26px;height:52px;min-width:120px;border-radius:8px;border:1px solid var(--line-h);
+  background:rgba(243,241,236,.05);color:var(--text);cursor:pointer;
+  transition:background .16s,transform .12s,box-shadow .2s,border-color .16s;
+  display:inline-flex;align-items:center;justify-content:center;gap:9px}
+.act:hover{background:rgba(243,241,236,.1);transform:translateY(-2px)}
+.act:active{transform:translateY(0)}
+.act.primary{background:var(--text);color:#0a0a0a;border-color:var(--text)}
+.act.primary:hover{box-shadow:0 14px 36px rgba(243,241,236,.2)}
+.act.danger{border-color:rgba(168,56,56,.45);color:var(--crimson-soft);background:rgba(168,56,56,.06)}
+.act.danger:hover{background:rgba(168,56,56,.16)}
+.act.gold{border-color:rgba(211,178,90,.5);color:var(--gold);background:rgba(211,178,90,.07)}
+.act.gold:hover{background:rgba(211,178,90,.16)}
+.act:disabled{opacity:.32;cursor:default;transform:none;box-shadow:none}
+.act .sub{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;opacity:.8;letter-spacing:.02em;text-transform:none}
+
+.raise-box{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:25;
+  display:flex;flex-direction:column;gap:12px;align-items:center;width:min(520px,94vw);
+  background:rgba(12,15,13,.98);border:1px solid var(--line-h);border-radius:16px;padding:16px 20px;
+  box-shadow:0 30px 80px rgba(0,0,0,.7)}
+.raise-presets{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.raise-preset{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.04em;text-transform:uppercase;
+  padding:9px 15px;border-radius:30px;border:1px solid var(--line-h);background:rgba(243,241,236,.04);
+  color:var(--text-2);cursor:pointer;transition:.14s}
+.raise-preset:hover,.raise-preset.on{background:rgba(211,178,90,.16);border-color:rgba(211,178,90,.5);color:var(--gold)}
+.raise-slider{display:flex;align-items:center;gap:16px;width:100%}
+.raise-slider input[type=range]{flex:1;accent-color:var(--gold);height:6px}
+.raise-amount{font-family:'Unbounded',sans-serif;font-weight:800;font-size:22px;color:var(--gold);min-width:80px;text-align:right}
+.raise-row{display:flex;gap:12px;width:100%}
+.raise-row .act{flex:1}
+.hint{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--text-3);min-height:14px;text-align:center}
+
+.log{position:fixed;left:22px;bottom:230px;z-index:15;width:230px;max-height:150px;overflow:hidden;
+  display:flex;flex-direction:column-reverse;gap:5px;pointer-events:none}
+.log-line{font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.5;color:var(--text-2);
+  background:rgba(6,9,7,.5);padding:4px 9px;border-left:2px solid rgba(200,184,154,.22);border-radius:0 4px 4px 0;
+  backdrop-filter:blur(6px)}
+
+.invite{position:absolute;left:50%;top:calc(27% + 120px);transform:translate(-50%,0);z-index:16;
+  width:min(420px,90vw);text-align:center;background:rgba(10,13,11,.96);
+  border:1px solid var(--line-h);border-radius:16px;padding:18px 22px;
+  backdrop-filter:blur(16px);box-shadow:0 30px 80px rgba(0,0,0,.6);display:none}
+.invite.show{display:block}
+.invite-eyebrow{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:13px}
+.invite-row{display:flex;gap:9px}
+.invite-link{flex:1;min-width:0;background:rgba(4,5,4,.7);border:1px solid var(--line);border-radius:8px;
+  padding:12px 13px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11px;outline:none}
+.invite-copy{flex:0 0 auto;background:var(--text);color:#0a0a0a;border:none;border-radius:8px;
+  padding:12px 18px;font-weight:700;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;transition:.16s}
+.invite-copy:hover{box-shadow:0 10px 26px rgba(243,241,236,.22)}
+.invite-copy.done{background:var(--green);color:#fff}
+.invite-hint{margin-top:11px;font-size:12px;color:var(--text-3);line-height:1.5}
+.lock-btn{margin-top:11px;width:100%;background:transparent;border:1px solid rgba(200,184,154,.2);color:var(--ink-dim);
+  padding:11px 0;cursor:pointer;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;
+  text-transform:uppercase;border-radius:8px;transition:.15s;display:none}
+.lock-btn:hover{border-color:rgba(168,56,56,.5);color:var(--crimson-soft)}
+.lock-btn.locked-state{border-color:rgba(168,56,56,.45);color:var(--crimson-soft)}
+
+.result{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;
+  background:rgba(4,3,5,.74);backdrop-filter:blur(5px)}
+.result.show{display:flex}
+.result-card{background:rgba(11,14,12,.97);border:1px solid var(--line-h);border-radius:18px;padding:34px 40px;
+  max-width:560px;width:92vw;text-align:center;box-shadow:0 40px 100px rgba(0,0,0,.7)}
+.result-eyebrow{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:14px}
+.result-win{font-family:'Unbounded',sans-serif;font-weight:800;font-size:24px;margin-bottom:6px}
+.result-win b{color:var(--gold)}
+.result-hand{font-size:14px;color:var(--gold);margin-bottom:20px}
+.reveal-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:11px 4px;border-top:1px solid var(--line)}
+.reveal-name{font-size:13px;color:var(--text-2)}
+.reveal-cards{display:flex;gap:4px}
+.reveal-cards .card{width:38px;box-shadow:0 4px 12px rgba(0,0,0,.5)}
+
+.gate{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;
+  background:var(--bg);text-align:center;flex-direction:column;gap:20px;padding:28px}
+.gate.show{display:flex}
+.gate-jp{font-family:'Noto Serif JP',serif;font-size:14px;letter-spacing:.4em;color:var(--ink-dim)}
+.gate h1{font-family:'Unbounded',sans-serif;font-weight:900;font-size:clamp(28px,6vw,52px);letter-spacing:-.02em}
+.gate p{color:var(--text-2);max-width:360px;font-size:14px;line-height:1.6}
+
+@media (max-width:900px){
+  .log{display:none}
+  .seat{width:140px}
+  .seat-cards .card{width:34px}
+  .myzone{gap:14px;flex-direction:column-reverse;align-items:center}
+  .my-readout{align-items:center;text-align:center;padding-bottom:0}
+}
+@media (max-width:560px){
+  .bar-tag{display:none}
+  .bar-r{gap:11px;font-size:11px}
+  .seat{width:120px}
+  .seat-name{font-size:12px}
+}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="bg-kanji">札</div>
+
+<div class="bar">
+  <div class="bar-l">
+    <span class="bar-logo">TALORI</span>
+    <span class="bar-tag">Покер · Холдём</span>
+  </div>
+  <div class="bar-r">
+    <span class="bar-stat"><span class="lbl">Рука</span><b id="bar-hand">—</b></span>
+    <span class="bar-stat"><span class="lbl">Блайнды</span><b id="bar-blinds">—</b></span>
+    <span class="bar-stat" id="bar-cur-wrap"><span class="lbl">Валюта</span><b id="bar-cur">—</b></span>
+    <a href="/poker.html" class="bar-exit" id="exit-btn">Выйти</a>
+  </div>
+</div>
+
+<div class="stage">
+  <div class="table-wrap">
+    <div class="felt">
+      <div class="felt-mark">札</div>
+    </div>
+    <div class="center">
+      <div class="board" id="board"></div>
+      <div class="pot" id="pot-block">
+        <div class="pot-label">Банк</div>
+        <div class="pot-val" id="pot-val">0</div>
+        <div class="pot-cur" id="pot-cur"></div>
+      </div>
+      <div class="phase-pill WAITING" id="phase-pill"><span class="dot"></span><span id="phase-text">Ожидание</span></div>
+    </div>
+    <div class="seats" id="seats"></div>
+
+    <div class="invite" id="invite">
+      <div class="invite-eyebrow">Пригласи друзей за стол</div>
+      <div class="invite-row">
+        <input class="invite-link" id="invite-link" readonly value=""/>
+        <button class="invite-copy" id="invite-copy" onclick="copyInvite()">Копировать</button>
+      </div>
+      <div class="invite-hint" id="invite-hint">Отправь ссылку — друзья откроют её и сядут за стол</div>
+      <button class="lock-btn" id="lock-btn" onclick="toggleLock()">🔒 Закрыть стол</button>
+    </div>
+  </div>
+
+  <div class="dock">
+  <div class="turn-cue" id="turn-cue"><span class="ln"></span><span>Твой ход</span><span class="ln"></span></div>
+  <div class="myzone">
+    <div class="myhand" id="myhand"></div>
+    <div class="my-readout" id="my-readout" style="display:none">
+      <div class="my-hand-name" id="my-hand-name"></div>
+      <div class="my-stack" id="my-stack"></div>
+    </div>
+  </div>
+  <div class="actions" id="actions"></div>
+  <div class="hint" id="hint"></div>
+  </div>
+</div>
+
+<div class="log" id="log"></div>
+
+<div class="result" id="result">
+  <div class="result-card">
+    <div class="result-eyebrow">Итог раздачи</div>
+    <div class="result-win" id="result-win"></div>
+    <div class="result-hand" id="result-hand"></div>
+    <div id="result-reveal"></div>
+  </div>
+</div>
+
+<div class="gate" id="gate">
+  <div class="gate-jp">札 の 卓</div>
+  <h1 id="gate-title">Стол не найден</h1>
+  <p id="gate-text">Эта игровая сессия закрыта или истекла.</p>
+  <a href="/poker.html" class="act primary" style="text-decoration:none">На страницу покера</a>
+</div>
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js" onerror="window.__noIoCdn=1"></script>
+<script>
+'use strict';
+const CARD_BASE = '/exports-cards/';
+const CARD = c => `${CARD_BASE}${c}.png`;
+const BACK = CARD_BASE + 'back_01_crimson.png';
+const CUR_NAME = { luna:'Луна', torii:'Тории' };
+
+const OPP_SLOTS = {
+  1:[[50,20]],
+  2:[[30,20],[70,20]],
+  3:[[8,32],[50,18],[92,32]],
+  4:[[8,32],[28,19],[72,19],[92,32]],
+  5:[[7,34],[27,20],[50,16],[73,20],[93,34]],
+};
+
+let socket=null, myId=null, isHost=false, currency=null, buyIn=0, seated=false, isPublic=false, locked=false;
+let lastState=null, lastMe=null;
+
+const $=id=>document.getElementById(id);
+const cardEl=(c,extra)=>`<div class="card${extra?' '+extra:''}" style="background-image:url('${CARD(c)}')"></div>`;
+
+function render(){
+  const st=lastState; if(!st) return;
+  $('pot-val').textContent=fmt(st.pot);
+  $('pot-cur').textContent=currency?CUR_NAME[currency]:'фишки';
+  $('bar-hand').textContent=st.handNo||'—';
+  $('bar-blinds').textContent=(st.smallBlind&&st.bigBlind)?`${fmt(st.smallBlind)}/${fmt(st.bigBlind)}`:'—';
+  $('bar-cur').textContent=currency?CUR_NAME[currency]:'Play';
+  const pill=$('phase-pill');
+  pill.className='phase-pill '+st.phase;
+  $('phase-text').textContent=phaseLabel(st.phase);
+  $('pot-block').style.display=(st.phase==='WAITING')?'none':'flex';
+
+  const board=st.board||[];
+  const comboSet=new Set((lastMe&&lastMe.best&&st.phase!=='WAITING')?lastMe.best:[]);
+  const hasCombo=comboSet.size>0;
+  let bhtml='';
+  if(!(st.phase==='WAITING'&&!board.length)){
+    for(let i=0;i<5;i++){
+      if(board[i]){
+        const cls=hasCombo?(comboSet.has(board[i])?'combo':'dim'):'';
+        bhtml+=cardEl(board[i],cls);
+      } else bhtml+='<div class="slot"></div>';
+    }
+  }
+  $('board').innerHTML=bhtml;
+
+  const inv=$('invite');
+  if(st.phase==='WAITING'){
+    const link=location.href.split('?')[0];
+    if($('invite-link').value!==link) $('invite-link').value=link;
+    if(isPublic){
+      $('invite-copy').style.display='none';
+      $('invite-hint').innerHTML='<span style="color:#54b487">✓ Ссылка отправлена в Discord</span>';
+    } else {
+      $('invite-copy').style.display='';
+      $('invite-hint').textContent='Отправь ссылку — друзья откроют её и сядут за стол';
+    }
+    const lockBtn=$('lock-btn');
+    if(isHost){
+      lockBtn.style.display='block';
+      lockBtn.textContent=locked?'🔓 Открыть стол':'🔒 Закрыть стол';
+      lockBtn.classList.toggle('locked-state',locked);
+    } else lockBtn.style.display='none';
+    inv.classList.add('show');
+  } else inv.classList.remove('show');
+
+  const opps=(st.seats||[]).filter(s=>s.id!==myId);
+  const slots=OPP_SLOTS[Math.min(5,Math.max(1,opps.length))]||OPP_SLOTS[5];
+  const seatsEl=$('seats'); seatsEl.innerHTML='';
+  opps.forEach((s,i)=>{
+    const pos=slots[i]||[50,50];
+    const el=document.createElement('div');
+    el.className='seat'+(s.folded?' folded':'')+((s.acting||s.id===st.actingId)?' acting':'');
+    el.style.left=pos[0]+'%'; el.style.top=pos[1]+'%';
+    const avatar=s.avatarUrl?`<div class="seat-av" style="background-image:url(${s.avatarUrl})"></div>`
+      :`<div class="seat-av">${(s.name||'?').slice(0,2).toUpperCase()}</div>`;
+    let cards='';
+    if(s.inHand&&!s.folded&&s.cardCount){
+      cards=Array.from({length:s.cardCount}).map(()=>cardEl('back_01_crimson')).join('');
+    } else {
+      cards=`<span class="seat-wait">${s.inHand?'':'ожидает'}</span>`;
+    }
+    el.innerHTML=`
+      <div class="seat-body">
+        ${s.id===st.dealerId?'<div class="seat-dealer">D</div>':''}
+        <div class="seat-top">${avatar}<div class="seat-meta">
+          <div class="seat-name">${esc(s.name)}</div>
+          <div class="seat-chips">${fmt(s.chips)}</div>
+        </div></div>
+        <div class="seat-cards">${cards}</div>
+        <div class="seat-act">${esc(s.lastAction||'')}</div>
+        ${s.bet>0?`<div class="seat-bet">${fmt(s.bet)}</div>`:''}
+      </div>`;
+    seatsEl.appendChild(el);
+  });
+
+  $('log').innerHTML=(st.events||[]).slice(-7).map(e=>`<div class="log-line">${esc(e.text)}</div>`).join('');
+
+  renderMe();
+  renderResult(st);
+}
+
+function renderMe(){
+  const me=lastMe, st=lastState;
+  const handEl=$('myhand'), actEl=$('actions'), hintEl=$('hint'), cue=$('turn-cue'), readout=$('my-readout');
+  handEl.innerHTML=''; actEl.innerHTML=''; hintEl.textContent='';
+  cue.classList.remove('show'); readout.style.display='none';
+
+  if(me&&me.cards&&me.cards.length&&me.inHand&&!me.folded){
+    const myCombo=new Set((me.best&&st&&st.phase!=='WAITING')?me.best:[]);
+    handEl.innerHTML=me.cards.map(c=>cardEl(c,myCombo.has(c)?'combo':'')).join('');
+    readout.style.display='flex';
+    $('my-hand-name').innerHTML=me.hand?`<span>${esc(me.hand)}</span>`:'';
+    $('my-stack').innerHTML=`Стек <b>${fmt(me.chips)}</b>`+(currency?` ${CUR_NAME[currency]}`:'');
+  }
+
+  if(!st)return;
+
+  if(!seated){
+    const full=(st.seats||[]).length>=(st.maxSeats||5);
+    if(full){ hintEl.textContent='Стол заполнен (максимум 5 игроков)'; }
+    else{
+      actEl.appendChild(btn('Сесть за стол','primary',()=>socket&&socket.emit('sit')));
+      hintEl.textContent=currency?`Бай-ин ${fmt(buyIn)} ${CUR_NAME[currency]}`:'Play-money стол · садись и жди раздачу';
+    }
+    return;
+  }
+
+  if(st.phase==='WAITING'){
+    const ready=(st.seats||[]).filter(s=>s.chips>0).length;
+    const need=st.minPlayers||3;
+    if(isHost){
+      const b=btn(ready<need?`Начать (${ready}/${need})`:'Начать раздачу','primary',()=>socket&&socket.emit('start'));
+      if(ready<need)b.disabled=true;
+      actEl.appendChild(b);
+      hintEl.textContent=ready<need?`Нужно минимум ${need} игрока — пригласи участников`:'Все в сборе — начинай!';
+    } else hintEl.textContent=ready<need?`Ждём игроков (${ready}/${need})`:'Ждём, пока ведущий начнёт раздачу';
+    return;
+  }
+
+  if(me&&me.isActing&&me.legal){
+    const l=me.legal;
+    cue.classList.add('show');
+    actEl.appendChild(btn('Фолд','danger',()=>act('fold')));
+    if(l.canCheck)actEl.appendChild(btn('Чек','',()=>act('check')));
+    if(l.canCall)actEl.appendChild(btn('Колл','primary',()=>act('call'),fmt(l.toCall)));
+    if(l.canRaise)actEl.appendChild(btn(l.toCall>0?'Рейз':'Бет','gold',()=>openRaise(l)));
+    hintEl.textContent='Выбери действие';
+    return;
+  }
+
+  if(['PREFLOP','FLOP','TURN','RIVER'].includes(st.phase)){
+    const who=(st.seats||[]).find(s=>s.id===st.actingId);
+    hintEl.textContent=who?(who.id===myId?'Твой ход':`Ходит ${esc(who.name)}`):'Торговля';
+  } else if(st.phase==='SHOWDOWN'){ hintEl.textContent='Вскрытие карт'; }
+}
+
+function openRaise(l){
+  const actEl=$('actions'), hintEl=$('hint');
+  actEl.innerHTML='';
+  const min=l.minRaiseTo, max=l.maxRaiseTo;
+  let val=min;
+  const box=document.createElement('div'); box.className='raise-box';
+  const presets=document.createElement('div'); presets.className='raise-presets';
+  const mk=(label,amount)=>{ if(amount==null||amount<min||amount>max)return null;
+    const b=document.createElement('button'); b.className='raise-preset'; b.textContent=label;
+    b.onclick=()=>{val=amount;sync();}; return b; };
+  [['Мин',min],['½ банка',l.halfPotTo],['Банк',l.potTo],['Олл-ин',max]].forEach(([lb,am])=>{const b=mk(lb,am);if(b)presets.appendChild(b);});
+  box.appendChild(presets);
+  const sl=document.createElement('div'); sl.className='raise-slider';
+  const range=document.createElement('input'); range.type='range'; range.min=min; range.max=max; range.step=l.bigBlind||1; range.value=min;
+  const amt=document.createElement('div'); amt.className='raise-amount';
+  range.oninput=()=>{val=Number(range.value);sync(false);};
+  sl.appendChild(range); sl.appendChild(amt); box.appendChild(sl);
+  const row=document.createElement('div'); row.className='raise-row';
+  row.appendChild(btn('Назад','',()=>renderMe()));
+  row.appendChild(btn('Поставить','gold',()=>act('raise',val)));
+  box.appendChild(row);
+  actEl.appendChild(box);
+  hintEl.textContent=`Диапазон ${fmt(min)} – ${fmt(max)}`;
+  function sync(updateRange=true){ val=Math.max(min,Math.min(max,val)); if(updateRange)range.value=val; amt.textContent=fmt(val);
+    presets.querySelectorAll('.raise-preset').forEach(b=>b.classList.toggle('on', b.textContent==='Олл-ин'?val===max:false)); }
+  sync();
+}
+
+function renderResult(st){
+  const r=st.result, box=$('result');
+  if(r&&st.phase==='WAITING'){
+    const w=r.winners&&r.winners[0];
+    const total=r.winners?r.winners.reduce((s,x)=>s+x.amount,0):0;
+    $('result-win').innerHTML=w?`${esc(w.name)} забирает <b>${fmt(total)}</b>`:'Раздача окончена';
+    $('result-hand').textContent=(w&&w.hand)?w.hand:(r.uncontested?'Все спасовали':'');
+    const rev=$('result-reveal');
+    let html='';
+    const winRev=(r.reveal||[]).find(p=>w&&p.id===w.id);
+    const winBest=new Set(winRev&&winRev.best?winRev.best:[]);
+    if(r.board&&r.board.length){
+      html+=`<div class="reveal-row" style="border-top:none;justify-content:center;padding-bottom:14px">
+        <span class="reveal-cards">${r.board.map(c=>cardEl(c,winBest.size?(winBest.has(c)?'combo':'dim'):'')).join('')}</span></div>`;
+    }
+    if(r.reveal&&r.reveal.length){
+      html+=r.reveal.map(p=>{
+        const best=new Set(p.best||[]);
+        const isWin=w&&p.id===w.id;
+        const cards=p.cards.map(c=>cardEl(c,best.size?(best.has(c)?'combo':'dim'):'')).join('');
+        return `<div class="reveal-row"${isWin?' style="background:rgba(211,178,90,.07)"':''}>
+          <span class="reveal-name"${isWin?' style="color:var(--gold)"':''}>${esc(p.name)} · ${p.hand}</span>
+          <span class="reveal-cards">${cards}</span></div>`;
+      }).join('');
+    }
+    rev.innerHTML=html;
+    box.classList.add('show');
+    clearTimeout(window._rt); window._rt=setTimeout(()=>box.classList.remove('show'),5600);
+  } else if(st.phase!=='WAITING'){ box.classList.remove('show'); }
+}
+
+function act(type,amount){ socket&&socket.emit('action',{type,amount}); }
+function btn(label,cls,fn,sub){ const b=document.createElement('button'); b.className='act'+(cls?' '+cls:'');
+  b.innerHTML=esc(label)+(sub?` <span class="sub">${esc(sub)}</span>`:''); b.onclick=fn; return b; }
+function fmt(n){ n=Number(n)||0; return n>=10000?(n/1000).toFixed(n%1000?1:0)+'k':String(n); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
+function phaseLabel(p){ return {WAITING:'Ожидание',PREFLOP:'Префлоп',FLOP:'Флоп',TURN:'Тёрн',RIVER:'Ривер',SHOWDOWN:'Вскрытие'}[p]||p; }
+
+function demo(){
+  myId='me'; seated=true; isHost=true; currency='luna'; buyIn=1000;
+  lastState={phase:'TURN',pot:1240,currentBet:0,handNo:7,dealerId:'b1',actingId:'me',maxSeats:5,minPlayers:3,bigBlind:40,smallBlind:20,
+    board:['spades_13_K','hearts_07_7','clubs_02_2','diamonds_13_K'],
+    seats:[
+      {id:'me',name:'Ты',seat:0,chips:1560,bet:0,folded:false,inHand:true,lastAction:'Чек',avatarUrl:null,cardCount:2},
+      {id:'b1',name:'Андрей',seat:1,chips:880,bet:0,folded:false,inHand:true,lastAction:'Чек',avatarUrl:null,cardCount:2},
+      {id:'b2',name:'Марина',seat:2,chips:2020,bet:120,folded:false,inHand:true,lastAction:'Бет 120',avatarUrl:null,cardCount:2},
+      {id:'b3',name:'Олег',seat:3,chips:600,bet:0,folded:true,inHand:true,lastAction:'Фолд',avatarUrl:null,cardCount:0},
+      {id:'b4',name:'Света',seat:4,chips:1340,bet:0,folded:false,inHand:true,lastAction:'Чек',avatarUrl:null,cardCount:2},
+    ],
+    result:null,
+    events:[{text:'Раздача #7. Блайнды 20/40.'},{text:'Олег: фолд.'},{text:'Флоп: K♠ 7♥ 2♣.'},{text:'Тёрн: K♦.'},{text:'Марина: бет 120.'}]};
+  lastMe={id:'me',inHand:true,folded:false,chips:1560,
+    cards:['spades_12_Q','hearts_13_K'],
+    best:['hearts_13_K','spades_13_K','diamonds_13_K','spades_12_Q','hearts_07_7'],
+    hand:'Сет королей',isActing:true,
+    legal:{toCall:120,canCheck:false,canCall:true,canRaise:true,minRaiseTo:240,maxRaiseTo:1560,halfPotTo:680,potTo:1360,bigBlind:40,pot:1240,myBet:0,myChips:1560}};
+  $('gate').classList.remove('show');
+  render();
+}
+
+async function init(){
+  if(location.search.includes('demo')){ demo(); return; }
+  try{ const r=await fetch('/api/me'); if(!r.ok){ location.href='/auth/login?redirect='+encodeURIComponent(location.href); return; } }
+  catch{ location.href='/auth/login?redirect='+encodeURIComponent(location.href); return; }
+
+  const sessionId=location.pathname.split('/').pop();
+  if(typeof io==='undefined'){ showGate('Стол недоступен','Не удалось загрузить игровой модуль.'); return; }
+  socket=io({path:'/poker-ws'});
+  socket.on('connect',()=>socket.emit('identify',{sessionId}));
+  socket.on('identified',d=>{ myId=d.userId; isHost=d.isHost; currency=d.currency; buyIn=d.buyIn; seated=d.seated; isPublic=!!d.isPublic; locked=!!d.locked; render(); });
+  socket.on('state',s=>{ lastState=s; if(s.locked!==undefined) locked=s.locked; render(); });
+  socket.on('me',m=>{ lastMe=m; seated=true; renderMe(); });
+  socket.on('error_msg',msg=>toast(msg));
+  socket.on('disconnect',()=>{ $('hint').textContent='Соединение потеряно — переподключаемся…'; });
+  $('exit-btn').addEventListener('click',()=>{ try{socket.emit('leave');}catch{} });
+}
+
+function showGate(t,x){ $('gate-title').textContent=t; $('gate-text').textContent=x; $('gate').classList.add('show'); }
+function toggleLock(){ socket&&socket.emit('lock'); }
+function copyInvite(){
+  const link=$('invite-link').value, b=$('invite-copy');
+  const done=()=>{ b.textContent='✓ Скопировано'; b.classList.add('done'); setTimeout(()=>{b.textContent='Копировать';b.classList.remove('done');},2000); };
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(link).then(done).catch(()=>{ $('invite-link').select();try{document.execCommand('copy');}catch{} done(); }); }
+  else { $('invite-link').select(); try{document.execCommand('copy');}catch{} done(); }
+}
+let _toastT;
+function toast(msg){ const h=$('hint'); h.textContent=msg; h.style.color='var(--crimson-soft)'; clearTimeout(_toastT); _toastT=setTimeout(()=>{h.style.color='';renderMe();},2600); }
+
+init();
+</script>
+</body>
+</html>

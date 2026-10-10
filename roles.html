@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Роли Мафии — Talori</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Unbounded:wght@400;700;800;900&family=Noto+Serif+JP:wght@400;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="theme.css" />
+  <style>
+    .page { max-width: 1160px; margin: 0 auto; padding: 0 32px 100px; position: relative; z-index: 1; }
+
+    .rl-hero { padding: 72px 0 44px; border-bottom: 1px solid var(--border); position: relative; }
+    .rl-hero::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 180px; height: 1px; background: linear-gradient(90deg, var(--ink), transparent); }
+    .rl-eyebrow { display: inline-flex; align-items: center; gap: 12px; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--ink); margin-bottom: 16px; }
+    .rl-eyebrow::before { content: ''; width: 28px; height: 1px; background: var(--ink); }
+    .rl-title { font-family: 'Unbounded', sans-serif; font-weight: 900; font-size: clamp(38px, 6vw, 76px); line-height: 0.92; letter-spacing: -0.03em; }
+    .rl-title em { font-family: 'Noto Serif JP', serif; font-style: italic; font-weight: 400; color: var(--ink); }
+    .rl-sub { max-width: 560px; margin-top: 22px; font-size: 16px; line-height: 1.7; color: var(--text-2); }
+    .rl-sub strong { color: var(--ink); font-weight: 500; }
+
+    .rl-section { padding-top: 64px; }
+    .rl-team-head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 30px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+    .rl-team-glyph { font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 40px; line-height: 1; }
+    .rl-team-name { font-family: 'Unbounded', sans-serif; font-weight: 800; font-size: 26px; letter-spacing: -0.01em; }
+    .rl-team-meta { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--text-3); margin-left: auto; }
+    .rl-team-town .rl-team-glyph, .rl-team-town .rl-team-name { color: var(--ink); }
+    .rl-team-mafia .rl-team-glyph, .rl-team-mafia .rl-team-name { color: var(--crimson-soft, #ec8080); }
+    .rl-team-neutral .rl-team-glyph, .rl-team-neutral .rl-team-name { color: var(--gold); }
+
+    .rl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    @media (max-width: 900px) { .rl-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) { .rl-grid { grid-template-columns: 1fr; } }
+
+    .rl-card { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+    .rl-card-img-wrap {
+      position: relative; width: 100%; max-width: 240px;
+      border-radius: 12px; overflow: hidden;
+      box-shadow: 0 22px 50px rgba(0,0,0,0.6), 0 0 0 1px rgba(243,241,236,0.05);
+      transition: transform 0.3s cubic-bezier(.2,.7,.2,1), box-shadow 0.3s;
+    }
+    .rl-card:hover .rl-card-img-wrap { transform: translateY(-6px); box-shadow: 0 30px 70px rgba(0,0,0,0.7), 0 0 0 1px rgba(200,184,154,0.18); }
+    .rl-card-img-wrap img { width: 100%; height: auto; display: block; }
+    .rl-card-meta { text-align: center; }
+    .rl-card-name { font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 0.02em; }
+    .rl-card-desc { font-size: 13px; color: var(--text-2); margin-top: 7px; line-height: 1.55; max-width: 240px; font-style: italic; font-family: 'Noto Serif JP', serif; }
+    .rl-card-tag { display: inline-block; margin-top: 10px; font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.26em; text-transform: uppercase; padding: 3px 10px; border: 1px solid var(--border-h); border-radius: 999px; color: var(--text-3); }
+
+    .rl-backs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 760px; }
+    @media (max-width: 560px) { .rl-backs { grid-template-columns: 1fr; } }
+
+    .rl-cta { margin-top: 80px; padding: 56px 44px; text-align: center; border: 1px solid var(--border); background: var(--bg-2); position: relative; overflow: hidden; }
+    .rl-cta::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 560px; height: 560px; border-radius: 50%; background: radial-gradient(circle, rgba(200,184,154,0.05) 0%, transparent 62%); }
+    .rl-cta-inner { position: relative; z-index: 1; }
+    .rl-cta-title { font-family: 'Unbounded', sans-serif; font-weight: 800; font-size: clamp(28px, 4.5vw, 46px); letter-spacing: -0.02em; margin-bottom: 16px; }
+    .rl-cta-title em { font-family: 'Noto Serif JP', serif; font-style: italic; font-weight: 400; color: var(--ink); }
+    .rl-cta-sub { max-width: 460px; margin: 0 auto 30px; font-size: 15px; line-height: 1.7; color: var(--text-2); }
+    .rl-btn { display: inline-flex; align-items: center; gap: 12px; padding: 16px 30px; border-radius: 4px; font-size: 13px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; background: var(--text); color: var(--bg); transition: transform 0.15s, box-shadow 0.25s; }
+    .rl-btn:hover { transform: translateY(-2px); box-shadow: 0 18px 50px rgba(243,241,236,0.16); }
+  </style>
+</head>
+<body>
+  <div class="page-bg" aria-hidden="true"></div>
+
+  <nav class="site-nav">
+    <div class="site-nav-inner">
+      <a href="index.html" class="site-nav-logo">
+        <img src="Talori1.png" alt="Talori"/>
+        <span>
+          <span class="site-nav-logo-text">TALORI</span>
+          <span class="site-nav-logo-sub">コミュニティ</span>
+        </span>
+      </a>
+      <div class="site-nav-links">
+        <a href="events.html" data-jp="イベント">СОБЫТИЯ</a>
+        <a href="leaderboard.html" data-jp="ランキング">ТОПЫ</a>
+        <a href="mafia.html" data-jp="マフィア">МАФИЯ</a>
+        <a href="poker.html" data-jp="ポーカー">ПОКЕР</a>
+        <a href="roles.html" data-jp="役職" class="active">РОЛИ</a>
+        <a href="clan.html" data-jp="クラン">КЛАНЫ</a>
+        <a href="staff.html" data-jp="スタッフ">СТАФФ</a>
+      </div>
+      <div class="site-nav-right">
+        <a href="auth/login" class="site-nav-btn"><span class="site-nav-btn-dot"></span>Войти</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <section class="rl-hero">
+      <div class="rl-eyebrow">Talori · Мафия · Кодекс</div>
+      <h1 class="rl-title">Карты <em>ролей</em></h1>
+      <p class="rl-sub">
+        Тринадцать ролей в трёх командах. Каждая карта — <strong>иероглиф-эмблема, медальон и способность</strong> в фирменной ноир-эстетике Talori. Изучи состав перед тем, как сесть за стол.
+      </p>
+    </section>
+
+    <section class="rl-section">
+      <div class="rl-team-head rl-team-town">
+        <span class="rl-team-glyph">町</span>
+        <span class="rl-team-name">ГОРОД</span>
+        <span class="rl-team-meta">Town · 6 ролей</span>
+      </div>
+      <div class="rl-grid">
+        <div class="rl-card">
+          <div class="rl-card-img-wrap"><img src="cards/01-card.png" alt="Мирный" /></div>
+          <div class="rl-card-meta"><div class="rl-card-name">МИРНЫЙ</div><div class="rl-card-desc">«голос дня — единственное оружие»</div><span class="rl-card-tag">Town · 民</span></div>
+        </div>
+        <div class="rl-card">
+          <div class="rl-card-img-wrap"><img src="cards/02-card.png" alt="Комиссар" /></div>
+          <div class="rl-card-meta"><div class="rl-card-name">КОМИССАР</div><div class="rl-card-desc">«проверяет одного игрока за ночь»</div><span class="rl-card-tag">Town · 警</span></div>
+        </div>
+        <div class="rl-card">
+          <div class="rl-card-img-wrap"><img src="cards/03-card.png" alt="Доктор" /></div>
+          <div class="rl-card-meta"><div class="rl-card-name">ДОКТОР</div><div class="rl-card-desc">«спасает раненого до рассвета»</div><span class="rl-card-tag">Town · 医</span></div>
+        </div>
+        <div class="rl-card">
+          <div class="rl-card-img-wrap"><img src="cards/04-card.png" alt="Телохранитель" /></div>
+          <div class="rl-card-meta"><div class="rl-card-name">ТЕЛОХРАНИТЕЛЬ</div><div class="rl-card-desc">«принимает пулю на себя»</div><span class="rl-card-tag">Town · 盾</span></div>
+        </div>
+        <div class="rl-card">
+          <div class="rl-card-img-wrap"><img src="cards/05-card.png" alt="Охотник" /></div>
+          <div class="rl-card-meta"><div class="rl-card-name">ОХОТНИК</div><div class="rl-card-desc">«один выстрел перед смертью»</div><span class="rl-card-tag">Town · 猟</span></div>
+        </div>
+        <div class="rl-card">
+          <div class="rl-card-img-wrap"><img src="cards/06-card.png" alt="Ветеран" /></div>
+          <div class="rl-card-meta"><div class="rl-card-name">ВЕТЕРАН</div><div class="rl-card-desc">«переживает первую ночь»</div><span class="rl-card-tag">Town · 士</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="rl-section">
+      <div class="rl-team-head rl-team-mafia">
+        <span class="rl-team-glyph">闇</span>
+        <span class="rl-team-name">МАФИЯ</span>
+        <span class="rl-team-meta">Mafia · 3 роли</span>
+      </div>
+      <div class="rl-grid">
+        <div class="rl-card">
+          <div class="rl-card-img-wrap"><img src="cards/07-card.png" alt="Мафия" /></div>
+          <div class="rl-card-meta"><div class="rl-card-name">МАФИЯ</div><div class="rl-card-desc">«стреляет в ночи вместе с командой»</div><span class="rl-card-tag">Mafia · 闇</span></div>
+        </div>
+        <div class="rl-card">
+          <div class="rl-card-img-wrap"><img src="cards/08-card.png" alt="Дон" /></div>
+          <div class="rl-card-meta"><div class="rl-card-name">ДОН</div><div class="rl-card-desc">«знает, кто настоящий комиссар»</div><span class="rl-card-tag">Mafia · 王</span></div>
+        </div>
+        <div class="rl-card">
+          <div class="rl-card-img-wrap"><img src="cards/09-card.png" alt="Путана" /></div>
+          <div class="rl-card-meta"><div class="rl-card-name">ПУТАНА</div><div class="rl-card-desc">«отвлекает игрока до утра»</div><span class="rl-card-tag">Mafia · 華</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="rl-section">
+      <div class="rl-team-head rl-team-neutral">
+        <span class="rl-team-glyph">中</span>
+        <span class="rl-team-name">НЕЙТРАЛ</span>
+        <span class="rl-team-meta">Neutral · 4 роли</span>
+      </div>
+      <div class="rl-grid">
+        <div class="rl-card">
+          <div class="rl-card-img-wrap"><img src="cards/10-card.png" alt="Оборотень" /></div>
+          <div class="rl-card-meta"><div class="rl-card-name">ОБОРОТЕНЬ</div><div class="rl-card-desc">«обращается в полнолуние»</div><span class="rl-card-tag">Neutral · 狼</span></div>
+        </div>
+        <div class="rl-card">
+          <div class="rl-card-img-wrap"><img src="cards/11-card.png" alt="Маньяк" /></div>
+          <div class="rl-card-meta"><div class="rl-card-name">МАНЬЯК</div><div class="rl-card-desc">«убивает в одиночку»</div><span class="rl-card-tag">Neutral · 刃</span></div>
+        </div>
+        <div class="rl-card">
+          <div class="rl-card-img-wrap"><img src="cards/12-card.png" alt="Шут" /></div>
+          <div class="rl-card-meta"><div class="rl-card-name">ШУТ</div><div class="rl-card-desc">«побеждает, будучи казнённым»</div><span class="rl-card-tag">Neutral · 戯</span></div>
+        </div>
+        <div class="rl-card">
+          <div class="rl-card-img-wrap"><img src="cards/13-card.png" alt="Экзекутор" /></div>
+          <div class="rl-card-meta"><div class="rl-card-name">ЭКЗЕКУТОР</div><div class="rl-card-desc">«выбирает цель в первую ночь»</div><span class="rl-card-tag">Neutral · 刑</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="rl-section">
+      <div class="rl-team-head">
+        <span class="rl-team-glyph" style="color:var(--text-2)">札</span>
+        <span class="rl-team-name" style="color:var(--text)">РУБАШКА</span>
+        <span class="rl-team-meta">Back · 3 тиража</span>
+      </div>
+      <div class="rl-backs">
+        <div class="rl-card">
+          <div class="rl-card-img-wrap"><img src="cards/14-card.png" alt="Стандарт" /></div>
+          <div class="rl-card-meta"><div class="rl-card-name">СТАНДАРТ</div><span class="rl-card-tag">Crimson · STD</span></div>
+        </div>
+        <div class="rl-card">
+          <div class="rl-card-img-wrap"><img src="cards/15-card.png" alt="Лунный" /></div>
+          <div class="rl-card-meta"><div class="rl-card-name">ЛУННЫЙ</div><span class="rl-card-tag">Moon · 月</span></div>
+        </div>
+        <div class="rl-card">
+          <div class="rl-card-img-wrap"><img src="cards/16-card.png" alt="Реликвия" /></div>
+          <div class="rl-card-meta"><div class="rl-card-name">РЕЛИКВИЯ</div><span class="rl-card-tag">Gold · 金</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="rl-cta">
+      <div class="rl-cta-inner">
+        <div class="rl-cta-title">Готов <em>сыграть</em>?</div>
+        <p class="rl-cta-sub">Открытые столы мафии запускаются на сервере Talori. Хочешь сначала научиться вести игру — пройди школу ведущего.</p>
+        <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+          <a href="player.html" class="rl-btn">
+            Вид игрока · ход
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a href="mafia-training.html" class="rl-btn" style="background:transparent;border:1px solid var(--border-h);color:var(--text)">
+            Школа ведущего
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <div class="site-footer-brand">
+        <a href="index.html" class="site-footer-logo">
+          <img src="Talori1.png" alt="Talori"/>
+          <span class="site-footer-logo-text">TALORI</span>
+        </a>
+        <p class="site-footer-desc">Японское ноир-комьюнити в Discord. Мафия, покер, события, кланы — всё на одном сервере.</p>
+      </div>
+      <div>
+        <div class="site-footer-col-title">Навигация</div>
+        <div class="site-footer-links">
+          <a href="events.html">События</a>
+          <a href="leaderboard.html">Рейтинги</a>
+          <a href="mafia.html">Мафия</a>
+          <a href="poker.html">Покер</a>
+          <a href="roles.html">Роли</a>
+        </div>
+      </div>
+      <div>
+        <div class="site-footer-col-title">Аккаунт</div>
+        <div class="site-footer-links">
+          <a href="profile.html">Профиль</a>
+          <a href="auth/login">Войти через Discord</a>
+          <a href="auth/logout">Выйти</a>
+        </div>
+      </div>
+    </div>
+    <div class="site-footer-bottom">
+      <span class="site-footer-copy">© MMXXVI TALORI · ALL RIGHTS RESERVED</span>
+      <span class="site-footer-kanji">十三の役、三つの道</span>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ограничения — Talori</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Unbounded:wght@400;700;800;900&family=Noto+Serif+JP:wght@400;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/theme.css" />
+  <style>
+    :root {
+      --accent-color: #e05555;
+    }
+
+    html, body {
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+    }
+    body { overflow-x: hidden; overflow-y: auto; }
+
+    .bg-talori {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background: url('/Talori_.png') 65% 15% / cover no-repeat;
+      filter: grayscale(80%) brightness(0.04) blur(14px);
+      transform: scale(1.04);
+    }
+
+    .bg-glow {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background: radial-gradient(ellipse at 50% 50%, var(--glow-color, rgba(224,85,85,0.15)) 0%, transparent 65%);
+      animation: glow-breathe 3s ease-in-out infinite;
+    }
+
+    @keyframes glow-breathe {
+      0%,100% { opacity: 0.6; }
+      50%      { opacity: 1; }
+    }
+
+    .scene {
+      position: relative; z-index: 1;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      min-height: 100vh;
+      padding: 32px;
+      gap: 0;
+    }
+
+    .user-av {
+      width: 80px; height: 80px; border-radius: 50%;
+      border: 3px solid var(--accent-color);
+      background: var(--bg-3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; font-weight: 800; color: var(--text-2);
+      margin-bottom: 24px;
+      background-size: cover;
+      animation: av-in 0.6s cubic-bezier(.34,1.56,.64,1) both;
+      box-shadow: 0 0 0 0 var(--accent-color);
+    }
+    @keyframes av-in {
+      from { transform: scale(0.5); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+
+    .verdict-card {
+      background: var(--bg-2);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 20px;
+      padding: 0;
+      width: min(520px, 100%);
+      overflow: hidden;
+      position: relative;
+      animation: card-drop 0.7s cubic-bezier(.34,1.2,.64,1) 0.2s both;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 60px var(--shadow-color, rgba(224,85,85,0.1));
+    }
+    @keyframes card-drop {
+      from { transform: translateY(-60px) scale(0.92); opacity: 0; }
+      to   { transform: none; opacity: 1; }
+    }
+
+    .card-shake { animation: card-drop 0.7s cubic-bezier(.34,1.2,.64,1) 0.2s both, shake 0.5s ease 0.9s both; }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      15%     { transform: translateX(-8px); }
+      30%     { transform: translateX(8px); }
+      45%     { transform: translateX(-5px); }
+      60%     { transform: translateX(5px); }
+      75%     { transform: translateX(-2px); }
+    }
+
+    .card-stripe {
+      height: 4px;
+      background: var(--accent-color);
+      box-shadow: 0 0 20px var(--accent-color);
+      animation: stripe-glow 2s ease-in-out infinite;
+    }
+    @keyframes stripe-glow {
+      0%,100% { box-shadow: 0 0 10px var(--accent-color); }
+      50%     { box-shadow: 0 0 30px var(--accent-color), 0 0 60px var(--accent-color); }
+    }
+
+    .stamp-wrap {
+      display: flex; justify-content: center;
+      padding: 32px 32px 0;
+      perspective: 600px;
+    }
+    .stamp {
+      width: 120px; height: 120px;
+      border-radius: 16px;
+      border: 3px solid var(--accent-color);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      animation: stamp-in 0.5s cubic-bezier(.34,1.4,.64,1) 0.7s both;
+      background: radial-gradient(circle at 50% 50%, var(--stamp-bg, rgba(224,85,85,0.1)) 0%, transparent 70%);
+    }
+    @keyframes stamp-in {
+      from { transform: rotateX(60deg) scale(0.5); opacity: 0; }
+      to   { transform: rotateX(0deg) scale(1); opacity: 1; }
+    }
+    .stamp-icon {
+      font-size: 48px;
+      filter: drop-shadow(0 0 12px var(--accent-color));
+      animation: icon-pulse 2s ease-in-out infinite 1.2s;
+    }
+    @keyframes icon-pulse {
+      0%,100% { filter: drop-shadow(0 0 8px var(--accent-color)); }
+      50%     { filter: drop-shadow(0 0 24px var(--accent-color)); }
+    }
+
+    .verdict-label {
+      font-family: 'Unbounded', sans-serif;
+      font-size: clamp(28px, 6vw, 48px);
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      color: var(--accent-color);
+      text-align: center;
+      padding: 20px 32px 4px;
+      line-height: 1;
+      text-shadow: 0 0 40px var(--accent-color);
+      animation: label-in 0.5s ease 1s both;
+    }
+    @keyframes label-in {
+      from { opacity: 0; transform: scale(0.85); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    .verdict-user {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-2);
+      text-align: center;
+      padding: 2px 32px 20px;
+      animation: label-in 0.5s ease 1.1s both;
+    }
+
+    .card-divider {
+      height: 1px;
+      margin: 0 24px;
+      background: var(--border);
+    }
+
+    .punishments-list {
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .punishment-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      background: var(--bg-3);
+      border: 1px solid rgba(255,255,255,0.05);
+      animation: item-in 0.4s ease both;
+    }
+    @keyframes item-in {
+      from { opacity: 0; transform: translateX(-12px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    .punishment-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      flex-shrink: 0;
+      animation: dot-pulse 2s ease-in-out infinite;
+    }
+    @keyframes dot-pulse {
+      0%,100% { box-shadow: 0 0 0 0 currentColor; }
+      50%     { box-shadow: 0 0 0 4px transparent; }
+    }
+
+    .punishment-label {
+      font-size: 14px; font-weight: 700; flex: 1;
+    }
+
+    .punishment-badge {
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 3px 9px; border-radius: 5px;
+    }
+
+    .verdict-msg {
+      padding: 0 24px 8px;
+      font-size: 13px;
+      color: var(--text-3);
+      text-align: center;
+      line-height: 1.6;
+      animation: label-in 0.5s ease 1.3s both;
+    }
+
+    .verdict-actions {
+      padding: 16px 24px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      animation: label-in 0.5s ease 1.5s both;
+    }
+
+    .btn-primary {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 14px 24px;
+      border-radius: 10px;
+      font-size: 14px; font-weight: 700;
+      text-decoration: none;
+      background: var(--accent-color);
+      color: white;
+      border: none; cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .btn-primary:hover { opacity: 0.85; transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-secondary {
+      display: flex; align-items: center; justify-content: center;
+      padding: 11px 24px;
+      border-radius: 10px;
+      font-size: 13px; font-weight: 600;
+      color: var(--text-3);
+      background: transparent;
+      border: 1px solid var(--border);
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .btn-secondary:hover { color: var(--text-2); border-color: rgba(255,255,255,0.12); }
+
+    .not-guild-note {
+      margin-top: 20px;
+      font-size: 12px;
+      color: var(--text-3);
+      text-align: center;
+      max-width: 400px;
+      line-height: 1.6;
+      animation: label-in 0.5s ease 1.8s both;
+    }
+
+    .particles {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .particle {
+      position: absolute; width: 2px; height: 2px; border-radius: 50%;
+      background: var(--accent-color); opacity: 0;
+      animation: particle-float linear infinite;
+    }
+    @keyframes particle-float {
+      0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+      10%  { opacity: 0.6; }
+      90%  { opacity: 0.3; }
+      100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+    }
+
+    @media (max-width: 560px) {
+      .scene { padding: 20px 14px 32px; min-height: 100svh; }
+      .user-av { width: 64px; height: 64px; font-size: 20px; margin-bottom: 18px; }
+      .verdict-card { border-radius: 16px; }
+      .stamp-wrap { padding: 24px 24px 0; }
+      .stamp { width: 96px; height: 96px; }
+      .stamp-icon { font-size: 40px; }
+      .verdict-label { padding: 16px 20px 4px; }
+      .punishments-list { padding: 16px; }
+      .verdict-actions { padding: 14px 18px 24px; }
+      .btn-primary, .btn-secondary { padding: 15px 20px; }
+    }
+    @media (hover: none) {
+      .btn-primary:active { opacity: 0.8; }
+      .btn-secondary:active { color: var(--text); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-talori" aria-hidden="true"></div>
+  <div class="bg-glow" id="bgGlow" aria-hidden="true"></div>
+  <div class="particles" id="particles" aria-hidden="true"></div>
+
+  <div class="scene">
+    <div class="user-av" id="userAv"></div>
+
+    <div class="verdict-card card-shake" id="verdictCard">
+      <div class="card-stripe" id="cardStripe"></div>
+
+      <div class="stamp-wrap">
+        <div class="stamp" id="stamp">
+          <div class="stamp-icon" id="stampIcon"></div>
+        </div>
+      </div>
+
+      <div class="verdict-label" id="verdictLabel">—</div>
+      <div class="verdict-user" id="verdictUser"></div>
+
+      <div class="card-divider"></div>
+
+      <div class="punishments-list" id="punishmentsList"></div>
+
+      <div class="verdict-msg" id="verdictMsg"></div>
+
+      <div class="verdict-actions" id="verdictActions"></div>
+    </div>
+
+    <div class="not-guild-note" id="notGuildNote" style="display:none">
+      Если это ошибка или ты хочешь подать апелляцию — обратись в поддержку сервера Talori
+    </div>
+  </div>
+
+  <script>
+    let SERVER_CONFIG = {
+      guildId: '1133794342876762213',
+      serverInvite: 'https://discord.gg/talori',
+      verifyUrl: 'https://discord.gg/talori',
+      banAppealUrl: 'https://discord.com/channels/1133794342876762213/1488240041519218718',
+      nonadmissionAppealUrl: 'https://discord.com/channels/1133794342876762213/1501643784948027545',
+    };
+
+    const CONFIGS = {
+      ban: {
+        icon: '🔨', label: 'БАН', color: '#e05555',
+        glowColor: 'rgba(224,85,85,0.2)',
+        stampBg: 'rgba(224,85,85,0.12)',
+        msg: 'Ты получил бан на сервере Talori. Если считаешь это ошибкой — подай апелляцию.',
+        badgeText: 'Заблокирован', badgeBg: 'rgba(224,85,85,0.15)',
+      },
+      unverify: {
+        icon: '🚫', label: 'АНВЕРЕФИ', color: '#8b5fe8',
+        glowColor: 'rgba(139,95,232,0.2)',
+        stampBg: 'rgba(139,95,232,0.12)',
+        msg: 'Твоя верификация была снята. Пройди верификацию заново.',
+        badgeText: 'Анверефи', badgeBg: 'rgba(139,95,232,0.15)',
+      },
+      nonadmission: {
+        icon: '⛔', label: 'НЕДОПУСК', color: '#e8a03b',
+        glowColor: 'rgba(232,160,59,0.2)',
+        stampBg: 'rgba(232,160,59,0.12)',
+        msg: 'Ты не прошёл верификацию. Свяжись со стаффом или подай апелляцию.',
+        badgeText: 'Недопущен', badgeBg: 'rgba(232,160,59,0.15)',
+      },
+      nonadmissionBan: {
+        icon: '🔴', label: 'БАН-НЕДОПУСК', color: '#e05555',
+        glowColor: 'rgba(224,85,85,0.2)',
+        stampBg: 'rgba(224,85,85,0.12)',
+        msg: 'Ты получил бан за нарушения в ходе верификации.',
+        badgeText: 'Бан-недопуск', badgeBg: 'rgba(224,85,85,0.15)',
+      },
+      voicemute: {
+        icon: '🔇', label: 'ВОЙС МУТ', color: '#5b7de8',
+        glowColor: 'rgba(91,125,232,0.15)',
+        stampBg: 'rgba(91,125,232,0.12)',
+        msg: 'Тебе выдан голосовой мут. Ты не можешь говорить в голосовых каналах.',
+        badgeText: 'Войс мут', badgeBg: 'rgba(91,125,232,0.15)',
+      },
+      textmute: {
+        icon: '✏️', label: 'ТЕКСТ МУТ', color: '#5b7de8',
+        glowColor: 'rgba(91,125,232,0.15)',
+        stampBg: 'rgba(91,125,232,0.12)',
+        msg: 'Тебе выдан текстовый мут. Ты не можешь писать в каналах.',
+        badgeText: 'Текст мут', badgeBg: 'rgba(91,125,232,0.15)',
+      },
+      chillban: {
+        icon: '❄️', label: 'ЧИЛЛ БАН', color: '#3ab8b8',
+        glowColor: 'rgba(58,184,184,0.15)',
+        stampBg: 'rgba(58,184,184,0.12)',
+        msg: 'Тебе выдан чилл бан — временный блок активности.',
+        badgeText: 'Чилл', badgeBg: 'rgba(58,184,184,0.15)',
+      },
+      events_ban: {
+        icon: '🎭', label: 'БАН С ИВЕНТОВ', color: '#c8a84b',
+        glowColor: 'rgba(200,168,75,0.15)',
+        stampBg: 'rgba(200,168,75,0.12)',
+        msg: 'Тебе запрещено участвовать в ивентах сервера.',
+        badgeText: 'Ивент бан', badgeBg: 'rgba(200,168,75,0.15)',
+      },
+      creative_ban: {
+        icon: '🎨', label: 'БАН С КРЕАТИВА', color: '#c8a84b',
+        glowColor: 'rgba(200,168,75,0.15)',
+        stampBg: 'rgba(200,168,75,0.12)',
+        msg: 'Тебе запрещено участвовать в активностях креатива.',
+        badgeText: 'Креатив бан', badgeBg: 'rgba(200,168,75,0.15)',
+      },
+      close_ban: {
+        icon: '🎮', label: 'БАН С КЛОЗОВ', color: '#c8a84b',
+        glowColor: 'rgba(200,168,75,0.15)',
+        stampBg: 'rgba(200,168,75,0.12)',
+        msg: 'Тебе запрещено участвовать в клозах.',
+        badgeText: 'Клоз бан', badgeBg: 'rgba(200,168,75,0.15)',
+      },
+      mafia_ban: {
+        icon: '🃏', label: 'БАН С МАФИИ', color: '#c8a84b',
+        glowColor: 'rgba(200,168,75,0.15)',
+        stampBg: 'rgba(200,168,75,0.12)',
+        msg: 'Тебе запрещено играть в мафию.',
+        badgeText: 'Мафия бан', badgeBg: 'rgba(200,168,75,0.15)',
+      },
+      not_member: {
+        icon: '👤', label: 'НЕ НА СЕРВЕРЕ', color: '#4a4a5a',
+        glowColor: 'rgba(100,100,120,0.1)',
+        stampBg: 'rgba(100,100,120,0.08)',
+        msg: 'Ты не являешься участником сервера Talori.',
+        badgeText: 'Не участник', badgeBg: 'rgba(74,74,90,0.3)',
+      },
+    };
+
+    function spawnParticles(color) {
+      const wrap = document.getElementById('particles');
+      for (let i = 0; i < 18; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.cssText = `
+          left: ${Math.random() * 100}%;
+          width: ${1 + Math.random() * 2}px;
+          height: ${1 + Math.random() * 2}px;
+          background: ${color};
+          animation-duration: ${4 + Math.random() * 6}s;
+          animation-delay: ${Math.random() * 4}s;
+        `;
+        wrap.appendChild(p);
+      }
+    }
+
+    function applyTheme(cfg) {
+      document.getElementById('bgGlow').style.setProperty('--glow-color', cfg.glowColor);
+      document.getElementById('bgGlow').style.background = `radial-gradient(ellipse at 50% 50%, ${cfg.glowColor} 0%, transparent 65%)`;
+      document.getElementById('cardStripe').style.background = cfg.color;
+      document.getElementById('cardStripe').style.boxShadow = `0 0 20px ${cfg.color}`;
+      document.getElementById('stamp').style.borderColor = cfg.color;
+      document.getElementById('stamp').style.setProperty('--stamp-bg', cfg.stampBg);
+      document.getElementById('stamp').style.background = `radial-gradient(circle at 50% 50%, ${cfg.stampBg} 0%, transparent 70%)`;
+      document.getElementById('stampIcon').textContent = cfg.icon;
+      document.getElementById('verdictLabel').textContent = cfg.label;
+      document.getElementById('verdictLabel').style.color = cfg.color;
+      document.getElementById('verdictLabel').style.textShadow = `0 0 40px ${cfg.color}`;
+      document.getElementById('verdictCard').style.boxShadow = `0 32px 80px rgba(0,0,0,0.6), 0 0 60px ${cfg.glowColor}`;
+      spawnParticles(cfg.color);
+      document.documentElement.style.setProperty('--accent-color', cfg.color);
+    }
+
+    function renderList(punishments, me) {
+      const list = document.getElementById('punishmentsList');
+      list.innerHTML = '';
+
+      const items = punishments.length > 0 ? punishments : [{
+        type: me.inGuild ? 'unknown' : 'not_member',
+        label: me.inGuild ? 'Неизвестное ограничение' : 'Не на сервере',
+        color: '#4a4a5a',
+      }];
+
+      items.forEach((p, i) => {
+        const cfg = CONFIGS[p.type] || { color: p.color || '#4a4a5a', badgeText: p.label, badgeBg: 'rgba(74,74,90,0.3)' };
+        const el = document.createElement('div');
+        el.className = 'punishment-item';
+        el.style.animationDelay = (1.2 + i * 0.12) + 's';
+        el.innerHTML = `
+          <div class="punishment-dot" style="background:${cfg.color || p.color};box-shadow:0 0 6px ${cfg.color || p.color}"></div>
+          <div class="punishment-label" style="color:${cfg.color || p.color}">${p.label}</div>
+          <div class="punishment-badge" style="background:${cfg.badgeBg || 'rgba(74,74,90,0.3)'};color:${cfg.color || p.color}">${cfg.badgeText || p.label}</div>
+        `;
+        list.appendChild(el);
+      });
+    }
+
+    function buildActions(punishments, inGuild) {
+      const wrap = document.getElementById('verdictActions');
+      const hasBlocking = punishments.some(p => ['ban','nonadmission','nonadmissionBan','unverify'].includes(p.type));
+      const hasNonadmission = punishments.some(p => ['nonadmission','nonadmissionBan'].includes(p.type));
+      const hasBan = punishments.some(p => p.type === 'ban');
+      const hasUnverify = punishments.some(p => p.type === 'unverify');
+
+      let html = '';
+
+      if (hasUnverify && !hasBan && !hasNonadmission) {
+        html += `<a href="${SERVER_CONFIG.verifyUrl}" target="_blank" class="btn-primary" style="background:#8b5fe8">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+          Пройти верификацию
+        </a>`;
+      }
+
+      if (hasNonadmission) {
+        html += `<a href="${SERVER_CONFIG.nonadmissionAppealUrl}" target="_blank" class="btn-primary" style="background:#e8a03b">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Подать апелляцию (недопуск)
+        </a>`;
+      } else if (hasBan) {
+        html += `<a href="${SERVER_CONFIG.banAppealUrl}" target="_blank" class="btn-primary" style="background:#e05555">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Подать апелляцию (бан)
+        </a>`;
+      } else if (!inGuild) {
+        html += `<a href="${SERVER_CONFIG.serverInvite}" target="_blank" class="btn-primary">
+          Вступить на сервер
+        </a>`;
+      }
+
+      if (!hasBlocking || inGuild) {
+        html += `<a href="/profile.html" class="btn-secondary">Перейти в профиль</a>`;
+      }
+
+      html += `<a href="/auth/logout" class="btn-secondary" style="color:var(--text-3)">Выйти из аккаунта</a>`;
+      wrap.innerHTML = html;
+    }
+
+    async function init() {
+      let me = null;
+      try {
+        const r = await fetch('/api/me');
+        if (r.ok) me = await r.json();
+      } catch {}
+
+      if (!me) { location.href = '/'; return; }
+
+      try {
+        const c = await fetch('/api/config');
+        if (c.ok) SERVER_CONFIG = { ...SERVER_CONFIG, ...(await c.json()) };
+      } catch {}
+
+      const avEl = document.getElementById('userAv');
+      if (me.avatar) {
+        avEl.style.background = `url(https://cdn.discordapp.com/avatars/${me.id}/${me.avatar}.png?size=128) center/cover`;
+        avEl.style.borderColor = 'var(--accent-color)';
+      } else {
+        avEl.textContent = (me.serverNick || me.username || '??').slice(0, 2).toUpperCase();
+      }
+
+      document.getElementById('verdictUser').textContent = me.serverNick || me.username || me.id;
+
+      const punishments = me.punishments || [];
+
+      const blocking = punishments.find(p => ['ban','nonadmission','nonadmissionBan','unverify'].includes(p.type));
+      const primary  = blocking || punishments[0];
+      const primaryType = primary?.type || (me.inGuild ? 'unknown' : 'not_member');
+      const cfg = CONFIGS[primaryType] || CONFIGS.not_member;
+
+      applyTheme(cfg);
+
+      document.getElementById('verdictMsg').textContent = cfg.msg || '';
+
+      if (!me.inGuild) {
+        document.getElementById('notGuildNote').style.display = '';
+      }
+
+      renderList(punishments, me);
+      buildActions(punishments, me.inGuild);
+    }
+
+    init();
+  </script>
+</body>
+</html>

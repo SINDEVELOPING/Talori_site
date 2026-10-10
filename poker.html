@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Покер · Холдём — Talori</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Unbounded:wght@400;700;800;900&family=Noto+Serif+JP:wght@400;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="theme.css" />
+  <style>
+    .page { max-width: 1160px; margin: 0 auto; padding: 0 32px 100px; position: relative; z-index: 1; }
+
+    .pk-hero {
+      position: relative;
+      padding: 80px 0 64px;
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .pk-hero::after {
+      content: ''; position: absolute; bottom: -1px; left: 0;
+      width: 200px; height: 1px;
+      background: linear-gradient(90deg, var(--crimson), transparent);
+    }
+    .pk-hero-kanji {
+      position: absolute; right: -2%; top: 50%; transform: translateY(-50%);
+      font-family: 'Noto Serif JP', serif; font-weight: 900;
+      font-size: clamp(180px, 26vw, 380px); line-height: 0.8;
+      color: rgba(168,56,56,0.05); pointer-events: none; user-select: none;
+      letter-spacing: -0.05em;
+    }
+    .pk-eyebrow {
+      display: inline-flex; align-items: center; gap: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.3em;
+      text-transform: uppercase; color: var(--crimson-soft, #ec8080); margin-bottom: 20px;
+    }
+    .pk-eyebrow::before { content: ''; width: 28px; height: 1px; background: currentColor; }
+    .pk-title {
+      font-family: 'Unbounded', sans-serif; font-weight: 900;
+      font-size: clamp(46px, 8vw, 110px); line-height: 0.9;
+      letter-spacing: -0.04em; position: relative; z-index: 1;
+    }
+    .pk-title em {
+      display: block;
+      font-family: 'Noto Serif JP', serif; font-style: italic; font-weight: 400;
+      font-size: clamp(20px, 3vw, 40px); letter-spacing: 0.04em;
+      color: transparent; -webkit-text-stroke: 1px var(--ink-dim);
+      margin-top: 10px;
+    }
+    .pk-sub {
+      max-width: 540px; margin-top: 26px;
+      font-size: 16px; line-height: 1.75; color: var(--text-2);
+      position: relative; z-index: 1;
+    }
+    .pk-sub strong { color: var(--ink); font-weight: 500; }
+    .pk-hero-cta { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 38px; position: relative; z-index: 1; }
+    .pk-btn {
+      display: inline-flex; align-items: center; gap: 12px;
+      padding: 16px 30px; border-radius: 4px;
+      font-size: 13px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+      transition: transform 0.15s, box-shadow 0.25s, background 0.2s, border-color 0.2s;
+    }
+    .pk-btn-primary { background: var(--text); color: var(--bg); }
+    .pk-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 18px 50px rgba(243,241,236,0.16); }
+    .pk-btn-ghost { border: 1px solid var(--border-h); color: var(--text); background: rgba(243,241,236,0.04); }
+    .pk-btn-ghost:hover { background: rgba(243,241,236,0.09); border-color: rgba(243,241,236,0.3); }
+
+    .pk-table-choice{
+      display:flex;gap:16px;flex-wrap:wrap;margin-top:38px;position:relative;z-index:1;
+    }
+    .pk-tc-card{
+      flex:1;min-width:220px;max-width:320px;
+      border:1px solid var(--border-h);background:rgba(243,241,236,.03);
+      padding:22px 24px;display:flex;flex-direction:column;gap:10px;
+      transition:border-color .18s,background .18s;
+    }
+    .pk-tc-card:hover{border-color:rgba(200,184,154,.3);background:rgba(243,241,236,.06)}
+    .pk-tc-card.primary-card{border-color:rgba(243,241,236,.18);background:rgba(243,241,236,.06)}
+    .pk-tc-label{
+      font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.3em;
+      text-transform:uppercase;color:var(--ink-dim);
+    }
+    .pk-tc-head{
+      font-family:'Unbounded',sans-serif;font-weight:700;font-size:17px;letter-spacing:-.01em;
+    }
+    .pk-tc-desc{
+      font-size:13px;color:var(--text-2);line-height:1.6;flex:1;
+    }
+    .pk-recipient{margin-top:10px;display:flex;flex-direction:column;gap:8px}
+    .pk-recipient-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--text-3)}
+    .pk-recipient-input{width:100%;background:rgba(243,241,236,.05);border:1px solid var(--border-h);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;padding:10px 14px;outline:none;border-radius:4px;transition:border-color .15s}
+    .pk-recipient-input::placeholder{color:var(--text-3)}
+    .pk-recipient-input:focus{border-color:rgba(200,184,154,.45)}
+    .pk-recipient-hint{font-size:11px;color:var(--text-3);line-height:1.5}
+    .pk-fan {
+      position: absolute; right: 40px; bottom: -40px; z-index: 0;
+      display: flex; pointer-events: none;
+    }
+    .pk-fan img {
+      width: 150px; height: auto; border-radius: 10px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.7);
+      margin-left: -64px;
+      transform-origin: bottom center;
+    }
+    .pk-fan img:nth-child(1) { transform: rotate(-16deg) translateY(22px); }
+    .pk-fan img:nth-child(2) { transform: rotate(-8deg) translateY(6px); }
+    .pk-fan img:nth-child(3) { transform: rotate(0deg); }
+    .pk-fan img:nth-child(4) { transform: rotate(8deg) translateY(6px); }
+    .pk-fan img:nth-child(5) { transform: rotate(16deg) translateY(22px); }
+    @media (max-width: 1024px) { .pk-fan { display: none; } }
+
+    .pk-section { padding-top: 72px; }
+    .pk-sec-head { margin-bottom: 36px; }
+    .pk-sec-eyebrow {
+      font-family: 'JetBrains Mono', monospace; font-size: 11px;
+      letter-spacing: 0.3em; text-transform: uppercase; color: var(--ink);
+      display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+    }
+    .pk-sec-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--ink); }
+    .pk-sec-title {
+      font-family: 'Unbounded', sans-serif; font-weight: 800;
+      font-size: clamp(28px, 4vw, 44px); letter-spacing: -0.02em; line-height: 1.05;
+    }
+    .pk-sec-title em {
+      font-family: 'Noto Serif JP', serif; font-style: italic; font-weight: 400;
+      color: var(--ink);
+    }
+    .pk-sec-sub { font-size: 15px; color: var(--text-2); margin-top: 12px; max-width: 620px; line-height: 1.6; }
+
+    .pk-steps { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--border); }
+    .pk-step { padding: 30px 26px; border-right: 1px solid var(--border); position: relative; }
+    .pk-step:last-child { border-right: none; }
+    .pk-step-num {
+      font-family: 'JetBrains Mono', monospace; font-size: 11px;
+      letter-spacing: 0.2em; color: var(--crimson-soft, #ec8080); margin-bottom: 20px;
+    }
+    .pk-step-jp {
+      font-family: 'Noto Serif JP', serif; font-weight: 700; font-size: 40px;
+      color: rgba(243,241,236,0.07); line-height: 1; margin-bottom: 16px;
+    }
+    .pk-step-title { font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: 17px; margin-bottom: 10px; }
+    .pk-step-desc { font-size: 13.5px; line-height: 1.65; color: var(--text-2); }
+    @media (max-width: 860px) { .pk-steps { grid-template-columns: 1fr 1fr; } .pk-step:nth-child(2) { border-right: none; } .pk-step:nth-child(1), .pk-step:nth-child(2) { border-bottom: 1px solid var(--border); } }
+    @media (max-width: 520px) { .pk-steps { grid-template-columns: 1fr; } .pk-step { border-right: none; border-bottom: 1px solid var(--border); } }
+
+    .pk-ranks { display: flex; flex-direction: column; gap: 2px; border: 1px solid var(--border); background: var(--border); }
+    .pk-rank {
+      display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 22px;
+      padding: 18px 24px; background: var(--bg-2); transition: background 0.18s;
+    }
+    .pk-rank:hover { background: var(--bg-3); }
+    .pk-rank-pos {
+      font-family: 'Unbounded', sans-serif; font-weight: 900; font-size: 22px;
+      color: var(--text-3); text-align: center;
+    }
+    .pk-rank.elite .pk-rank-pos { color: var(--gold); }
+    .pk-rank-info { min-width: 0; }
+    .pk-rank-name { font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: 16px; color: var(--text); }
+    .pk-rank-name span { font-family: 'JetBrains Mono', monospace; font-weight: 400; font-size: 11px; letter-spacing: 0.14em; color: var(--text-3); margin-left: 10px; text-transform: uppercase; }
+    .pk-rank-desc { font-size: 13px; color: var(--text-2); margin-top: 4px; }
+    .pk-hand { display: flex; gap: 4px; flex-shrink: 0; }
+    .pk-hand img {
+      width: 52px; height: auto; border-radius: 5px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.55);
+    }
+    @media (max-width: 760px) {
+      .pk-rank { grid-template-columns: 36px 1fr; }
+      .pk-hand { grid-column: 1 / -1; margin-top: 6px; }
+      .pk-hand img { width: 44px; }
+    }
+
+    .pk-deck-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+    }
+    .pk-deck-card {
+      border: 1px solid var(--border); background: var(--bg-2); padding: 28px;
+      display: flex; flex-direction: column; align-items: center; gap: 18px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .pk-deck-card:hover { border-color: var(--border-h); transform: translateY(-3px); }
+    .pk-deck-card img { width: 160px; height: auto; border-radius: 10px; box-shadow: 0 18px 44px rgba(0,0,0,0.6); }
+    .pk-deck-label { text-align: center; }
+    .pk-deck-label .n { font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.04em; }
+    .pk-deck-label .s { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--text-3); margin-top: 5px; }
+    @media (max-width: 720px) { .pk-deck-grid { grid-template-columns: 1fr; } }
+
+    .pk-suits { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--border); }
+    .pk-suit { padding: 26px 22px; border-right: 1px solid var(--border); text-align: center; }
+    .pk-suit:last-child { border-right: none; }
+    .pk-suit-sym { font-size: 40px; line-height: 1; margin-bottom: 12px; }
+    .pk-suit-sym.red { color: var(--crimson-soft, #ec8080); }
+    .pk-suit-sym.bone { color: var(--moon); }
+    .pk-suit-name { font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: 14px; }
+    .pk-suit-jp { font-family: 'Noto Serif JP', serif; font-size: 12px; color: var(--ink-dim); margin-top: 4px; }
+    @media (max-width: 560px) { .pk-suits { grid-template-columns: 1fr 1fr; } .pk-suit:nth-child(2) { border-right: none; } .pk-suit:nth-child(1), .pk-suit:nth-child(2) { border-bottom: 1px solid var(--border); } }
+
+    .pk-cta {
+      margin-top: 80px; padding: 64px 48px; text-align: center;
+      border: 1px solid var(--border); background: var(--bg-2);
+      position: relative; overflow: hidden;
+    }
+    .pk-cta::before {
+      content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 600px; height: 600px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(168,56,56,0.07) 0%, transparent 62%);
+    }
+    .pk-cta-inner { position: relative; z-index: 1; }
+    .pk-cta-title { font-family: 'Unbounded', sans-serif; font-weight: 800; font-size: clamp(30px, 5vw, 52px); letter-spacing: -0.02em; line-height: 1; margin-bottom: 18px; }
+    .pk-cta-title em { font-family: 'Noto Serif JP', serif; font-style: italic; font-weight: 400; color: var(--ink); }
+    .pk-cta-sub { max-width: 480px; margin: 0 auto 34px; font-size: 15px; line-height: 1.7; color: var(--text-2); }
+  </style>
+</head>
+<body>
+  <div class="page-bg" aria-hidden="true"></div>
+
+  <nav class="site-nav">
+    <div class="site-nav-inner">
+      <a href="index.html" class="site-nav-logo">
+        <img src="Talori1.png" alt="Talori"/>
+        <span>
+          <span class="site-nav-logo-text">TALORI</span>
+          <span class="site-nav-logo-sub">コミュニティ</span>
+        </span>
+      </a>
+      <div class="site-nav-links">
+        <a href="events.html" data-jp="イベント">СОБЫТИЯ</a>
+        <a href="leaderboard.html" data-jp="ランキング">ТОПЫ</a>
+        <a href="mafia.html" data-jp="マフィア">МАФИЯ</a>
+        <a href="poker.html" data-jp="ポーカー" class="active">ПОКЕР</a>
+        <a href="clan.html" data-jp="クラン">КЛАНЫ</a>
+        <a href="staff.html" data-jp="スタッフ">СТАФФ</a>
+      </div>
+      <div class="site-nav-right">
+        <a href="auth/login" class="site-nav-btn"><span class="site-nav-btn-dot"></span>Войти</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <section class="pk-hero">
+      <div class="pk-hero-kanji">札</div>
+      <div class="pk-eyebrow">Talori · Карточный стол</div>
+      <h1 class="pk-title">
+        ПОКЕР
+        <em>Холдём · 撲克</em>
+      </h1>
+      <p class="pk-sub">
+        <strong>Техасский Холдём</strong> — классика покера: две закрытые карты в руке, пять общих на столе. Собирай лучшую комбинацию из семи карт. Стол на <strong>3–5 участников</strong>, колода <strong>Talori</strong> в фирменной ноир-эстетике.
+      </p>
+      <div class="pk-table-choice">
+        <div class="pk-tc-card primary-card">
+          <div class="pk-tc-label">Открытый стол</div>
+          <div class="pk-tc-head">Для всех</div>
+          <div class="pk-tc-desc">Бот отправляет ссылку в общий канал Discord — любой участник сервера может присоединиться.</div>
+          <button id="pk-btn-hero" onclick="startPokerTable(this,true)" class="pk-btn pk-btn-primary" style="margin-top:4px">
+            Создать стол
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <div class="pk-tc-card">
+          <div class="pk-tc-label">Приватный стол</div>
+          <div class="pk-tc-head">По приглашению</div>
+          <div class="pk-tc-desc">Ссылка отправляется в ЛС конкретному игроку — войти могут только приглашённые.</div>
+          <div class="pk-recipient">
+            <div class="pk-recipient-label">Кому отправить</div>
+            <input id="pk-recipient" class="pk-recipient-input" placeholder="Discord-тег или @имя" maxlength="64" autocomplete="off"/>
+            <div class="pk-recipient-hint">Бот отправит ссылку этому игроку в ЛС Discord</div>
+            <button id="pk-btn-hero-priv" onclick="startPrivateTable(this)" class="pk-btn pk-btn-ghost" style="margin-top:4px">Создать и отправить</button>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:16px;position:relative;z-index:1">
+        <a href="#rules" class="pk-btn pk-btn-ghost" style="font-size:12px;padding:11px 22px">Правила игры</a>
+      </div>
+      <div id="pk-status-hero" style="margin-top:18px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;color:var(--ink-dim);min-height:18px;position:relative;z-index:1"></div>
+
+      <div class="pk-fan" aria-hidden="true">
+        <img src="exports-cards/spades_01_A.png" alt="" />
+        <img src="exports-cards/hearts_13_K.png" alt="" />
+        <img src="exports-cards/spades_12_Q.png" alt="" />
+        <img src="exports-cards/diamonds_11_J.png" alt="" />
+        <img src="exports-cards/clubs_10_10.png" alt="" />
+      </div>
+    </section>
+
+    <section class="pk-section" id="rules">
+      <div class="pk-sec-head">
+        <div class="pk-sec-eyebrow">Как играть · 遊び方</div>
+        <h2 class="pk-sec-title">Раздача в <em>четыре улицы</em></h2>
+        <p class="pk-sec-sub">Техасский Холдём — самый популярный покер в мире. Две карты в руке, пять общих на столе: решает и расчёт, и умение читать соперника.</p>
+      </div>
+      <div class="pk-steps">
+        <div class="pk-step">
+          <div class="pk-step-num">— 01</div>
+          <div class="pk-step-jp">配</div>
+          <div class="pk-step-title">Префлоп</div>
+          <div class="pk-step-desc">Каждый получает <b>2 закрытые карты</b>. Двое слева от дилера ставят блайнды, формируя банк. Первый круг торговли.</div>
+        </div>
+        <div class="pk-step">
+          <div class="pk-step-num">— 02</div>
+          <div class="pk-step-jp">賭</div>
+          <div class="pk-step-title">Флоп</div>
+          <div class="pk-step-desc">На стол открывают <b>3 общие карты</b>. Новый круг ставок: <b>чек, бет, колл, рейз или фолд</b>.</div>
+        </div>
+        <div class="pk-step">
+          <div class="pk-step-num">— 03</div>
+          <div class="pk-step-jp">換</div>
+          <div class="pk-step-title">Тёрн и ривер</div>
+          <div class="pk-step-desc">Открывают <b>4-ю, затем 5-ю</b> общую карту — с кругом торговли после каждой. Банк растёт.</div>
+        </div>
+        <div class="pk-step">
+          <div class="pk-step-num">— 04</div>
+          <div class="pk-step-jp">勝</div>
+          <div class="pk-step-title">Вскрытие</div>
+          <div class="pk-step-desc"><b>Шоудаун</b>: лучшая комбинация из пяти карт (две свои + пять общих) забирает банк. Все спасовали — банк твой без вскрытия.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pk-section">
+      <div class="pk-sec-head">
+        <div class="pk-sec-eyebrow">Комбинации · 役</div>
+        <h2 class="pk-sec-title">Старшинство <em>рук</em></h2>
+        <p class="pk-sec-sub">От сильнейшей к слабейшей. При равных комбинациях решает старшая карта (кикер).</p>
+      </div>
+      <div class="pk-ranks">
+        <div class="pk-rank elite">
+          <div class="pk-rank-pos">1</div>
+          <div class="pk-rank-info">
+            <div class="pk-rank-name">Роял-флеш <span>Royal flush</span></div>
+            <div class="pk-rank-desc">10–J–Q–K–A одной масти. Непобедимая рука.</div>
+          </div>
+          <div class="pk-hand">
+            <img src="exports-cards/spades_10_10.png" alt=""><img src="exports-cards/spades_11_J.png" alt=""><img src="exports-cards/spades_12_Q.png" alt=""><img src="exports-cards/spades_13_K.png" alt=""><img src="exports-cards/spades_01_A.png" alt="">
+          </div>
+        </div>
+        <div class="pk-rank elite">
+          <div class="pk-rank-pos">2</div>
+          <div class="pk-rank-info">
+            <div class="pk-rank-name">Стрит-флеш <span>Straight flush</span></div>
+            <div class="pk-rank-desc">Пять карт подряд одной масти.</div>
+          </div>
+          <div class="pk-hand">
+            <img src="exports-cards/hearts_05_5.png" alt=""><img src="exports-cards/hearts_06_6.png" alt=""><img src="exports-cards/hearts_07_7.png" alt=""><img src="exports-cards/hearts_08_8.png" alt=""><img src="exports-cards/hearts_09_9.png" alt="">
+          </div>
+        </div>
+        <div class="pk-rank">
+          <div class="pk-rank-pos">3</div>
+          <div class="pk-rank-info">
+            <div class="pk-rank-name">Каре <span>Four of a kind</span></div>
+            <div class="pk-rank-desc">Четыре карты одного достоинства.</div>
+          </div>
+          <div class="pk-hand">
+            <img src="exports-cards/spades_13_K.png" alt=""><img src="exports-cards/hearts_13_K.png" alt=""><img src="exports-cards/diamonds_13_K.png" alt=""><img src="exports-cards/clubs_13_K.png" alt=""><img src="exports-cards/spades_07_7.png" alt="">
+          </div>
+        </div>
+        <div class="pk-rank">
+          <div class="pk-rank-pos">4</div>
+          <div class="pk-rank-info">
+            <div class="pk-rank-name">Фулл-хаус <span>Full house</span></div>
+            <div class="pk-rank-desc">Тройка + пара.</div>
+          </div>
+          <div class="pk-hand">
+            <img src="exports-cards/spades_12_Q.png" alt=""><img src="exports-cards/hearts_12_Q.png" alt=""><img src="exports-cards/diamonds_12_Q.png" alt=""><img src="exports-cards/clubs_09_9.png" alt=""><img src="exports-cards/hearts_09_9.png" alt="">
+          </div>
+        </div>
+        <div class="pk-rank">
+          <div class="pk-rank-pos">5</div>
+          <div class="pk-rank-info">
+            <div class="pk-rank-name">Флеш <span>Flush</span></div>
+            <div class="pk-rank-desc">Пять карт одной масти, не подряд.</div>
+          </div>
+          <div class="pk-hand">
+            <img src="exports-cards/diamonds_02_2.png" alt=""><img src="exports-cards/diamonds_05_5.png" alt=""><img src="exports-cards/diamonds_08_8.png" alt=""><img src="exports-cards/diamonds_11_J.png" alt=""><img src="exports-cards/diamonds_13_K.png" alt="">
+          </div>
+        </div>
+        <div class="pk-rank">
+          <div class="pk-rank-pos">6</div>
+          <div class="pk-rank-info">
+            <div class="pk-rank-name">Стрит <span>Straight</span></div>
+            <div class="pk-rank-desc">Пять карт подряд разных мастей.</div>
+          </div>
+          <div class="pk-hand">
+            <img src="exports-cards/clubs_04_4.png" alt=""><img src="exports-cards/hearts_05_5.png" alt=""><img src="exports-cards/spades_06_6.png" alt=""><img src="exports-cards/diamonds_07_7.png" alt=""><img src="exports-cards/clubs_08_8.png" alt="">
+          </div>
+        </div>
+        <div class="pk-rank">
+          <div class="pk-rank-pos">7</div>
+          <div class="pk-rank-info">
+            <div class="pk-rank-name">Сет <span>Three of a kind</span></div>
+            <div class="pk-rank-desc">Три карты одного достоинства.</div>
+          </div>
+          <div class="pk-hand">
+            <img src="exports-cards/spades_07_7.png" alt=""><img src="exports-cards/hearts_07_7.png" alt=""><img src="exports-cards/diamonds_07_7.png" alt=""><img src="exports-cards/clubs_12_Q.png" alt=""><img src="exports-cards/spades_02_2.png" alt="">
+          </div>
+        </div>
+        <div class="pk-rank">
+          <div class="pk-rank-pos">8</div>
+          <div class="pk-rank-info">
+            <div class="pk-rank-name">Две пары <span>Two pair</span></div>
+            <div class="pk-rank-desc">Две разные пары.</div>
+          </div>
+          <div class="pk-hand">
+            <img src="exports-cards/spades_01_A.png" alt=""><img src="exports-cards/hearts_01_A.png" alt=""><img src="exports-cards/clubs_08_8.png" alt=""><img src="exports-cards/diamonds_08_8.png" alt=""><img src="exports-cards/spades_05_5.png" alt="">
+          </div>
+        </div>
+        <div class="pk-rank">
+          <div class="pk-rank-pos">9</div>
+          <div class="pk-rank-info">
+            <div class="pk-rank-name">Пара <span>One pair</span></div>
+            <div class="pk-rank-desc">Две карты одного достоинства.</div>
+          </div>
+          <div class="pk-hand">
+            <img src="exports-cards/spades_10_10.png" alt=""><img src="exports-cards/hearts_10_10.png" alt=""><img src="exports-cards/clubs_13_K.png" alt=""><img src="exports-cards/diamonds_06_6.png" alt=""><img src="exports-cards/spades_03_3.png" alt="">
+          </div>
+        </div>
+        <div class="pk-rank">
+          <div class="pk-rank-pos">10</div>
+          <div class="pk-rank-info">
+            <div class="pk-rank-name">Старшая карта <span>High card</span></div>
+            <div class="pk-rank-desc">Ничего не собралось — решает высшая карта.</div>
+          </div>
+          <div class="pk-hand">
+            <img src="exports-cards/spades_01_A.png" alt=""><img src="exports-cards/hearts_11_J.png" alt=""><img src="exports-cards/clubs_08_8.png" alt=""><img src="exports-cards/diamonds_05_5.png" alt=""><img src="exports-cards/spades_02_2.png" alt="">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pk-section">
+      <div class="pk-sec-head">
+        <div class="pk-sec-eyebrow">Колода · 札</div>
+        <h2 class="pk-sec-title">Четыре <em>масти</em></h2>
+        <p class="pk-sec-sub">52 карты, выполненные в фирменной эстетике Talori — иероглиф-водяной знак, hairline-рамки и приглушённое золото.</p>
+      </div>
+      <div class="pk-suits">
+        <div class="pk-suit"><div class="pk-suit-sym bone">♠</div><div class="pk-suit-name">ПИКИ</div><div class="pk-suit-jp">黒 · くろ</div></div>
+        <div class="pk-suit"><div class="pk-suit-sym red">♥</div><div class="pk-suit-name">ЧЕРВИ</div><div class="pk-suit-jp">紅 · べに</div></div>
+        <div class="pk-suit"><div class="pk-suit-sym red">♦</div><div class="pk-suit-name">БУБНЫ</div><div class="pk-suit-jp">菱 · ひし</div></div>
+        <div class="pk-suit"><div class="pk-suit-sym bone">♣</div><div class="pk-suit-name">ТРЕФЫ</div><div class="pk-suit-jp">梅 · うめ</div></div>
+      </div>
+    </section>
+
+    <section class="pk-section">
+      <div class="pk-sec-head">
+        <div class="pk-sec-eyebrow">Лицо колоды · 顔</div>
+        <h2 class="pk-sec-title">Карты <em>Talori</em></h2>
+      </div>
+      <div class="pk-deck-grid">
+        <div class="pk-deck-card">
+          <img src="exports-cards/spades_01_A.png" alt="Туз пик" />
+          <div class="pk-deck-label"><div class="n">Туз пик</div><div class="s">Ace · медальон</div></div>
+        </div>
+        <div class="pk-deck-card">
+          <img src="exports-cards/hearts_13_K.png" alt="Король червей" />
+          <div class="pk-deck-label"><div class="n">Король червей</div><div class="s">King · 王 · фигура</div></div>
+        </div>
+        <div class="pk-deck-card">
+          <img src="exports-cards/back_01_crimson.png" alt="Рубашка" />
+          <div class="pk-deck-label"><div class="n">Рубашка</div><div class="s">Back · печать 札</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pk-cta">
+      <div class="pk-cta-inner">
+        <div class="pk-cta-title">Собери <em>стол</em></div>
+        <p class="pk-cta-sub">Создай стол и отправь ссылку участникам сервера — нужно от 3 до 5 человек. Садитесь и играйте в Холдём прямо в браузере, в реальном времени.</p>
+        <button id="pk-btn-cta" onclick="startPokerTable(this,true)" class="pk-btn pk-btn-primary">
+          Открытый стол
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button id="pk-btn-cta-priv" onclick="startPokerTable(this,false)" class="pk-btn pk-btn-ghost" style="margin-top:10px">Приватный стол</button>
+        <div id="pk-status-cta" style="margin-top:18px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;color:var(--ink-dim);min-height:18px"></div>
+      </div>
+    </section>
+
+  </div>
+
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <div class="site-footer-brand">
+        <a href="index.html" class="site-footer-logo">
+          <img src="Talori1.png" alt="Talori"/>
+          <span class="site-footer-logo-text">TALORI</span>
+        </a>
+        <p class="site-footer-desc">Японское ноир-комьюнити в Discord. Мафия, покер, события, кланы — всё на одном сервере.</p>
+      </div>
+      <div>
+        <div class="site-footer-col-title">Навигация</div>
+        <div class="site-footer-links">
+          <a href="events.html">События</a>
+          <a href="leaderboard.html">Рейтинги</a>
+          <a href="mafia.html">Мафия</a>
+          <a href="poker.html">Покер</a>
+          <a href="roles.html">Роли</a>
+        </div>
+      </div>
+      <div>
+        <div class="site-footer-col-title">Аккаунт</div>
+        <div class="site-footer-links">
+          <a href="profile.html">Профиль</a>
+          <a href="auth/login">Войти через Discord</a>
+          <a href="auth/logout">Выйти</a>
+        </div>
+      </div>
+    </div>
+    <div class="site-footer-bottom">
+      <span class="site-footer-copy">© MMXXVI TALORI · ALL RIGHTS RESERVED</span>
+      <span class="site-footer-kanji">札の道は夜に続く</span>
+    </div>
+  </footer>
+
+  <script>
+  'use strict';
+  async function startPrivateTable(btn){
+    const recipient=(document.getElementById('pk-recipient')?.value||'').trim();
+    if(!recipient){
+      const input=document.getElementById('pk-recipient');
+      if(input){input.focus();input.style.borderColor='rgba(168,56,56,.7)';setTimeout(()=>input.style.borderColor='',1800);}
+      return;
+    }
+    try{
+      const check=await fetch('/api/me');
+      if(!check.ok){location.href='/auth/login?redirect='+encodeURIComponent(location.href);return;}
+    }catch{location.href='/auth/login?redirect='+encodeURIComponent(location.href);return;}
+    const label=btn.textContent.trim();
+    btn.disabled=true;btn.style.opacity='.55';btn.textContent='Открываем стол…';
+    const status=document.getElementById('pk-status-hero');
+    try{
+      const r=await fetch('/api/poker/table',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isPublic:false,recipient})});
+      const d=await r.json();
+      if(d.sessionId){
+        if(status){status.style.color='var(--green)';status.textContent='✓ Ссылка отправлена игроку в ЛС';}
+        setTimeout(()=>location.href='/poker/'+d.sessionId,900);
+        return;
+      }
+      throw new Error('no session');
+    }catch(e){
+      btn.disabled=false;btn.style.opacity='1';btn.textContent=label;
+      if(status){status.style.color='var(--crimson-soft,#ec8080)';status.textContent='Не удалось создать стол — попробуй ещё раз';}
+    }
+  }
+
+  async function startPokerTable(btn,isPublic){
+    const label=btn?btn.textContent.trim():'';
+    try{
+      const check=await fetch('/api/me');
+      if(!check.ok){ location.href='/auth/login?redirect='+encodeURIComponent(location.href); return; }
+    }catch{ location.href='/auth/login?redirect='+encodeURIComponent(location.href); return; }
+    if(btn){ btn.disabled=true; btn.style.opacity='.55'; btn.textContent='Открываем стол…'; }
+    try{
+      const r=await fetch('/api/poker/table',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({isPublic:!!isPublic})});
+      const d=await r.json();
+      if(d.sessionId){ location.href='/poker/'+d.sessionId; return; }
+      throw new Error('no session');
+    }catch{
+      if(btn){ btn.disabled=false; btn.style.opacity='1'; btn.textContent=label; }
+    }
+  }
+
+  async function proposePoker(btnId, statusId){
+    const btn=document.getElementById(btnId);
+    const status=document.getElementById(statusId);
+    try{
+      const check=await fetch('/api/me');
+      if(!check.ok){
+        location.href='/auth/login?redirect='+encodeURIComponent(location.href);
+        return;
+      }
+    }catch{
+      location.href='/auth/login?redirect='+encodeURIComponent(location.href);
+      return;
+    }
+    btn.disabled=true; btn.style.opacity='.55'; btn.style.cursor='default';
+    status.style.color='var(--ink-dim)';
+    status.textContent='Отправляем заявку...';
+    try{
+      const r=await fetch('/api/poker/propose',{method:'POST'});
+      if(!r.ok) throw new Error(r.status);
+      status.style.color='var(--green)';
+      status.textContent='✓ Заявка отправлена в чат покера';
+      btn.innerHTML='✓ Заявка отправлена';
+    }catch{
+      btn.disabled=false; btn.style.opacity='1'; btn.style.cursor='';
+      status.style.color='var(--crimson-soft, #ec8080)';
+      status.textContent='Ошибка — попробуй ещё раз';
+    }
+  }
+
+  (async()=>{
+    try{
+      const r=await fetch('/api/me');
+      if(!r.ok) return;
+      const me=await r.json();
+      const right=document.querySelector('.site-nav-right');
+      if(right){
+        const name=me.serverNick||me.username||'Профиль';
+        right.innerHTML='<a href="/profile.html" class="site-nav-user"><span class="site-nav-username">'+name+'</span></a>';
+      }
+    }catch{}
+  })();
+  </script>
+
+</body>
+</html>

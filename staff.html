@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Стафф — Talori</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Unbounded:wght@400;700;800;900&family=Noto+Serif+JP:wght@400;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/theme.css" />
+  <style>
+    .page { max-width: 1160px; margin: 0 auto; padding: 48px 32px 80px; position: relative; z-index: 1; }
+
+    .page-header { margin-bottom: 40px; padding-bottom: 36px; border-bottom: 1px solid var(--border); position: relative; }
+    .page-header::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 160px; height: 1px; background: linear-gradient(90deg, var(--ink), transparent); }
+    .page-eyebrow {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.3em;
+      text-transform: uppercase; color: var(--ink); margin-bottom: 12px;
+    }
+    .page-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--ink); }
+    .page-title { font-family: 'Unbounded', sans-serif; font-size: clamp(26px, 3.5vw, 42px); font-weight: 900; letter-spacing: -0.015em; line-height: 1.1; }
+    .page-sub { font-size: 15px; color: var(--text-2); margin-top: 10px; }
+
+    .section-head { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; margin-top: 44px; }
+    .section-head:first-of-type { margin-top: 0; }
+    .section-head-title { font-family: 'Unbounded', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.03em; white-space: nowrap; }
+    .section-head-line { flex: 1; height: 1px; background: var(--border); }
+    .section-head-count { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3); }
+
+    @keyframes card-in { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+    @keyframes bar-in  { from{height:0} to{} }
+    @keyframes fade-up { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+    @keyframes pulse   { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.4)} }
+
+    .overview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; margin-bottom: 0; }
+    .ov-card { background: var(--bg-2); border: 1px solid var(--border); border-radius: 2px; padding: 18px 20px; transition: border-color .2s; animation: card-in .35s ease both; }
+    .ov-card:hover { border-color: var(--border-h); }
+    .ov-label { font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--text-3); margin-bottom: 8px; }
+    .ov-val { font-family: 'Unbounded', sans-serif; font-size: 26px; font-weight: 900; line-height: 1; }
+    .ov-sub { font-size: 11px; color: var(--text-3); margin-top: 4px; }
+    .ov-card:nth-child(1){animation-delay:.04s} .ov-card:nth-child(2){animation-delay:.08s}
+    .ov-card:nth-child(3){animation-delay:.12s} .ov-card:nth-child(4){animation-delay:.16s}
+    .ov-card:nth-child(5){animation-delay:.20s} .ov-card:nth-child(6){animation-delay:.24s}
+
+    .filter-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 24px; }
+    .filter-btn { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 6px 14px; border-radius: 4px; cursor: pointer; background: var(--bg-3); border: 1px solid var(--border); color: var(--text-3); transition: background .15s, color .15s, border-color .15s; }
+    .filter-btn:hover { color: var(--text-2); border-color: var(--border-h); }
+    .filter-btn.active { background: var(--bg-4); border-color: var(--border-h); color: var(--text); }
+
+    .staff-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; }
+
+    .staff-card {
+      background: var(--bg-2); border: 1px solid var(--border); border-radius: 2px;
+      overflow: hidden; transition: border-color .2s, transform .2s;
+      animation: card-in .4s ease both;
+    }
+    .staff-card:hover { border-color: var(--border-h); transform: translateY(-2px); }
+
+    .staff-card-top { height: 3px; }
+    .st-mod  .staff-card-top { background: linear-gradient(90deg, var(--blue), transparent); }
+    .st-con  .staff-card-top { background: linear-gradient(90deg, var(--gold), transparent); }
+    .st-sup  .staff-card-top { background: linear-gradient(90deg, var(--green), transparent); }
+    .st-helper .staff-card-top { background: linear-gradient(90deg, var(--teal), transparent); }
+    .st-emod .staff-card-top { background: linear-gradient(90deg, var(--purple), transparent); }
+    .st-cmod .staff-card-top { background: linear-gradient(90deg, var(--red), transparent); }
+    .st-mafiamod   .staff-card-top { background: linear-gradient(90deg, #a83838, transparent); }
+    .st-con        .staff-card-top { background: linear-gradient(90deg, var(--gold), transparent); }
+    .st-tribmod    .staff-card-top { background: linear-gradient(90deg, #c8783a, transparent); }
+    .st-creative   .staff-card-top { background: linear-gradient(90deg, #c84a8a, transparent); }
+    .st-clanmod    .staff-card-top { background: linear-gradient(90deg, #5bb87a, transparent); }
+    .st-master     .staff-card-top { background: linear-gradient(90deg, var(--gold), transparent); }
+    .st-curator    .staff-card-top { background: linear-gradient(90deg, #c8b89a, transparent); }
+    .st-assistance .staff-card-top { background: linear-gradient(90deg, #8a6ac8, transparent); }
+    .st-admin      .staff-card-top { background: linear-gradient(90deg, #c83848, transparent); }
+
+    .staff-card-body { padding: 18px 20px 20px; }
+
+    .staff-head { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+    .staff-av {
+      width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800; color: white;
+    }
+    .staff-info { flex: 1; min-width: 0; }
+    .staff-name { font-size: 15px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .staff-role { font-size: 11px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; margin-top: 2px; }
+    .st-mod        .staff-role { color: var(--blue); }
+    .st-con        .staff-role { color: var(--gold); }
+    .st-sup        .staff-role { color: var(--green); }
+    .st-helper     .staff-role { color: var(--teal); }
+    .st-emod       .staff-role { color: var(--purple); }
+    .st-cmod       .staff-role { color: var(--red); }
+    .st-mafiamod   .staff-role { color: #a83838; }
+    .st-tribmod    .staff-role { color: #c8783a; }
+    .st-creative   .staff-role { color: #c84a8a; }
+    .st-clanmod    .staff-role { color: #5bb87a; }
+    .st-master     .staff-role { color: var(--gold); }
+    .st-curator    .staff-role { color: #c8b89a; }
+    .st-assistance .staff-role { color: #8a6ac8; }
+    .st-admin      .staff-role { color: #c83848; }
+
+    .staff-online { width: 8px; height: 8px; border-radius: 50%; background: var(--green); margin-left: auto; flex-shrink: 0; animation: pulse 3s infinite; }
+    .staff-offline { width: 8px; height: 8px; border-radius: 50%; background: var(--text-3); margin-left: auto; flex-shrink: 0; }
+
+    .staff-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+    .st-stat { background: var(--bg-3); border-radius: 2px; padding: 10px 12px; text-align: center; }
+    .st-stat-val { font-family: 'Unbounded', sans-serif; font-size: 16px; font-weight: 900; color: var(--text); line-height: 1; }
+    .st-stat-label { font-size: 9px; color: var(--text-3); text-transform: uppercase; letter-spacing: .08em; margin-top: 3px; }
+
+    .week-chart { display: flex; align-items: flex-end; gap: 4px; height: 36px; }
+    .week-bar { flex: 1; border-radius: 3px 3px 0 0; min-height: 3px; animation: bar-in .6s ease both; transition: opacity .15s; }
+    .week-bar:hover { opacity: .7; }
+    .st-mod        .week-bar { background: var(--blue); }
+    .st-con        .week-bar { background: var(--gold); }
+    .st-sup        .week-bar { background: var(--green); }
+    .st-helper     .week-bar { background: var(--teal); }
+    .st-emod       .week-bar { background: var(--purple); }
+    .st-cmod       .week-bar { background: var(--red); }
+    .st-mafiamod   .week-bar { background: #a83838; }
+    .st-tribmod    .week-bar { background: #c8783a; }
+    .st-creative   .week-bar { background: #c84a8a; }
+    .st-clanmod    .week-bar { background: #5bb87a; }
+    .st-master     .week-bar { background: var(--gold); }
+    .st-curator    .week-bar { background: #c8b89a; }
+    .st-assistance .week-bar { background: #8a6ac8; }
+    .st-admin      .week-bar { background: #c83848; }
+    .week-days { display: flex; gap: 4px; margin-top: 4px; }
+    .week-day { flex: 1; text-align: center; font-size: 9px; color: var(--text-3); }
+
+    .staff-secondary { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+    .sec-badge { font-size: 10px; font-weight: 600; padding: 3px 9px; border-radius: 6px; }
+
+    .top-table { background: var(--bg-2); border: 1px solid var(--border); border-radius: 2px; overflow: hidden; }
+    .top-row { display: grid; grid-template-columns: 28px 1fr 80px 80px 80px 120px; align-items: center; padding: 12px 20px; gap: 12px; border-bottom: 1px solid var(--border); transition: background .15s; }
+    .top-row:hover { background: var(--bg-3); }
+    .top-row:last-child { border-bottom: none; }
+    .top-row.head { background: transparent !important; cursor: default; }
+    .top-row.head .top-col { font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); }
+    .top-pos { font-family: 'Unbounded', sans-serif; font-size: 13px; font-weight: 900; text-align: center; }
+    .top-pos.p1 { color: var(--gold); } .top-pos.p2 { color: #aab4c8; } .top-pos.p3 { color: #c87a55; } .top-pos.pn { color: var(--text-3); }
+    .top-player { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .top-av { width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: white; }
+    .top-av.av-gold   { background: linear-gradient(135deg, var(--gold), #a07820); }
+    .top-av.av-silver { background: linear-gradient(135deg, #b8c4d8, #6a7a8a); }
+    .top-av.av-bronze { background: linear-gradient(135deg, #c87a55, #7a3a1a); }
+    .top-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .top-tag  { font-size: 10px; color: var(--text-3); margin-top: 1px; }
+    .top-col  { font-size: 13px; color: var(--text-2); }
+    .top-val  { font-family: 'Unbounded', sans-serif; font-size: 14px; font-weight: 700; color: var(--text); }
+    .top-bar-wrap { display: flex; align-items: center; gap: 8px; }
+    .top-bar  { flex: 1; height: 4px; background: var(--bg-4); border-radius: 3px; overflow: hidden; }
+    .top-bar-fill { height: 100%; border-radius: 3px; }
+    .top-pct  { font-size: 11px; font-weight: 700; min-width: 34px; text-align: right; }
+
+    @media (max-width: 900px) {
+      .top-row { grid-template-columns: 28px 1fr 80px 120px; }
+      .top-row > *:nth-child(3), .top-row > *:nth-child(4) { display: none; }
+    }
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .page { padding: 32px 16px 60px; }
+      .staff-grid { grid-template-columns: 1fr; }
+      .overview-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-bg" aria-hidden="true"></div>
+
+  <nav class="site-nav">
+    <div class="site-nav-inner">
+      <a href="/" class="site-nav-logo">
+        <img src="/Talori1.png" alt="Talori"/>
+        <span>
+          <span class="site-nav-logo-text">TALORI</span>
+          <span class="site-nav-logo-sub">コミュニティ</span>
+        </span>
+      </a>
+      <div class="site-nav-links">
+        <a href="/events.html" data-jp="イベント">СОБЫТИЯ</a>
+        <a href="/leaderboard.html" data-jp="ランキング">ТОПЫ</a>
+        <a href="/mafia.html" data-jp="マフィア">МАФИЯ</a>
+        <a href="/poker.html" data-jp="ポーカー">ПОКЕР</a>
+        <a href="/roles.html" data-jp="役職">РОЛИ</a>
+        <a href="/clan.html" data-jp="クラン">КЛАНЫ</a>
+        <a href="/staff.html" data-jp="スタッフ" class="active">СТАФФ</a>
+      </div>
+      <div class="site-nav-right" id="nav-right">
+      </div>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <div class="page-header">
+      <div class="page-eyebrow">Сервер Talori</div>
+      <h1 class="page-title">Состав</h1>
+      <p class="page-sub">Активность и статистика членов состава за неделю</p>
+    </div>
+
+    <div class="section-head" style="margin-top:0">
+      <div class="section-head-title">Общая статистика</div>
+      <div class="section-head-line"></div>
+      <div class="section-head-count">за эту неделю</div>
+    </div>
+
+    <div class="overview-grid">
+      <div class="ov-card"><div class="ov-label">Всего стаффа</div><div class="ov-val" id="ov-members" style="color:var(--text)">—</div><div class="ov-sub">активных позиций</div></div>
+      <div class="ov-card"><div class="ov-label">Верификаций</div><div class="ov-val" id="ov-verif" style="color:var(--green)">—</div><div class="ov-sub">за всё время</div></div>
+      <div class="ov-card"><div class="ov-label">Предупреждений</div><div class="ov-val" id="ov-warns" style="color:var(--gold)">—</div><div class="ov-sub">за всё время</div></div>
+      <div class="ov-card"><div class="ov-label">Мутов</div><div class="ov-val" id="ov-mutes" style="color:var(--purple)">—</div><div class="ov-sub">за всё время</div></div>
+      <div class="ov-card"><div class="ov-label">Банов</div><div class="ov-val" id="ov-bans" style="color:var(--red)">—</div><div class="ov-sub">за всё время</div></div>
+      <div class="ov-card"><div class="ov-label">Недопусков</div><div class="ov-val" id="ov-nadm" style="color:var(--teal)">—</div><div class="ov-sub">за всё время</div></div>
+    </div>
+
+    <div class="section-head">
+      <div class="section-head-title">Участники состава</div>
+      <div class="section-head-line"></div>
+      <div class="section-head-count" id="staffCount">24 человека</div>
+    </div>
+
+    <div class="filter-bar" id="filterBar">
+      <button class="filter-btn active" data-role="all">Все</button>
+      <button class="filter-btn" data-role="management">Руководство</button>
+      <button class="filter-btn" data-role="mod">Модераторы</button>
+      <button class="filter-btn" data-role="con">Контроль</button>
+      <button class="filter-btn" data-role="sup">Саппорт</button>
+      <button class="filter-btn" data-role="helper">Хелперы</button>
+      <button class="filter-btn" data-role="eventsmod">Ивент</button>
+      <button class="filter-btn" data-role="closemod">Клоуз</button>
+      <button class="filter-btn" data-role="tribunemod">Трибун</button>
+      <button class="filter-btn" data-role="creative">Креатив</button>
+      <button class="filter-btn" data-role="contentmaker">Контент</button>
+      <button class="filter-btn" data-role="clanmod">Клан</button>
+      <button class="filter-btn" data-role="mafiamod">Мафия</button>
+    </div>
+
+    <div class="staff-grid" id="staffGrid">
+      <div style="color:var(--text-3);padding:40px;text-align:center;font-size:13px;grid-column:1/-1">Загрузка...</div>
+    </div>
+
+  </div>
+
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <div class="site-footer-brand">
+        <a href="/" class="site-footer-logo">
+          <img src="/Talori1.png" alt="Talori"/>
+          <span class="site-footer-logo-text">TALORI</span>
+        </a>
+        <p class="site-footer-desc">Японское ноир-комьюнити в Discord. Мафия, события, кланы — всё на одном сервере.</p>
+      </div>
+      <div>
+        <div class="site-footer-col-title">Навигация</div>
+        <div class="site-footer-links">
+          <a href="/events.html">События</a>
+          <a href="/leaderboard.html">Рейтинги</a>
+          <a href="/mafia.html">Мафия</a>
+          <a href="/clan.html">Кланы</a>
+          <a href="/staff.html">Состав</a>
+        </div>
+      </div>
+      <div>
+        <div class="site-footer-col-title">Аккаунт</div>
+        <div class="site-footer-links">
+          <a href="/profile.html">Профиль</a>
+          <a href="/auth/login">Войти через Discord</a>
+          <a href="/auth/logout">Выйти</a>
+        </div>
+      </div>
+    </div>
+    <div class="site-footer-bottom">
+      <span class="site-footer-copy">© MMXXVI TALORI · ALL RIGHTS RESERVED</span>
+      <span class="site-footer-kanji">武道の道は永遠に</span>
+    </div>
+  </footer>
+
+  <script>
+    const MANAGEMENT_TYPES = new Set(['master','curator','assistance','administrator']);
+
+    const BRANCH_LABEL = {
+      mod:         'Модератор',
+      con:         'Контроль',
+      sup:         'Саппорт',
+      helper:      'Хелпер',
+      eventsmod:   'Ивент мод',
+      closemod:    'Клоуз мод',
+      tribunemod:  'Трибун мод',
+      creative:    'Креатив',
+      contentmaker:'Контент',
+      clanmod:     'Клан мод',
+      mafiamod:    'Мафия мод',
+      master:      'Мастер',
+      curator:     'Куратор',
+      assistance:  'Заместитель',
+      administrator:'Администратор',
+    };
+    const BRANCH_CLASS = {
+      mod:         'st-mod',
+      con:         'st-con',
+      sup:         'st-sup',
+      helper:      'st-helper',
+      eventsmod:   'st-emod',
+      closemod:    'st-cmod',
+      tribunemod:  'st-tribmod',
+      creative:    'st-creative',
+      contentmaker:'st-helper',
+      clanmod:     'st-clanmod',
+      mafiamod:    'st-mafiamod',
+      master:      'st-master',
+      curator:     'st-curator',
+      assistance:  'st-assistance',
+      administrator:'st-admin',
+    };
+    const BRANCH_COLOR = {
+      mod:         'var(--blue)',
+      con:         'var(--gold)',
+      sup:         'var(--green)',
+      helper:      'var(--teal)',
+      eventsmod:   'var(--purple)',
+      closemod:    'var(--red)',
+      tribunemod:  '#c8783a',
+      creative:    '#c84a8a',
+      contentmaker:'var(--teal)',
+      clanmod:     '#5bb87a',
+      mafiamod:    '#a83838',
+      master:      'var(--gold)',
+      curator:     '#c8b89a',
+      assistance:  '#8a6ac8',
+      administrator:'#c83848',
+    };
+
+    const filterBar  = document.getElementById('filterBar');
+    const staffGrid  = document.getElementById('staffGrid');
+    const staffCount = document.getElementById('staffCount');
+
+    function fmtCount(n) {
+      return n + ' ' + (n % 10 === 1 && n % 100 !== 11 ? 'человек' : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 'человека' : 'человек');
+    }
+    function fmtVoice(ms) {
+      const h = Math.floor(ms / 3600000);
+      return h > 0 ? `${h} ч войса` : `${Math.floor(ms / 60000)} мин`;
+    }
+    function sum(arr) { return (arr || []).reduce((a, b) => a + Number(b), 0); }
+    function avatarUrl(id, hash) {
+      return hash ? `https://cdn.discordapp.com/avatars/${id}/${hash}.webp?size=64` : null;
+    }
+    function initials(name) { return (name || '??').slice(0, 2).toUpperCase(); }
+
+    function renderChart(el, data, color) {
+      el.innerHTML = '';
+      const max = Math.max(...data) || 1;
+      data.forEach((val, i) => {
+        const bar = document.createElement('div');
+        bar.className = 'week-bar';
+        bar.style.height = Math.max(3, (val / max) * 36) + 'px';
+        bar.style.background = color;
+        bar.style.animationDelay = (i * 0.05) + 's';
+        bar.title = val + ' действий';
+        el.appendChild(bar);
+      });
+    }
+
+    function buildCard(m, isSelf) {
+      const branch   = m.type || 'mod';
+      const cls      = BRANCH_CLASS[branch]  || 'st-mod';
+      const label    = BRANCH_LABEL[branch]  || branch;
+      const color    = BRANCH_COLOR[branch]  || 'var(--blue)';
+      const avUrl    = avatarUrl(m.avatarId || m.memberId, m.avatarHash);
+      const warnW    = sum(m.warnsWeek);
+      const muteW    = sum(m.mutesWeek);
+      const banW     = sum(m.bansWeek);
+      const verifW   = sum(m.verifiesWeek);
+      const nadmW    = sum(m.nonAdmissionsWeek);
+      const msgsW    = sum(m.messagesWeek);
+      const voiceMs  = (Number(m.voiceTimeAllTime) || 0) * 1000;
+      const weekData = (m.warnsWeek || []).map((v, i) =>
+        Number(v) + Number((m.mutesWeek||[])[i] || 0) +
+        Number((m.bansWeek||[])[i] || 0) + Number((m.verifiesWeek||[])[i] || 0));
+
+      const roleDisplay = m.tierRole && !MANAGEMENT_TYPES.has(branch)
+        ? `${m.tierRole} по ${label}`
+        : label;
+
+      const isVerifier = ['sup', 'helper', 'con'].includes(branch);
+      const stat1 = isVerifier
+        ? `<div class="st-stat"><div class="st-stat-val" style="color:var(--green)">${verifW}</div><div class="st-stat-label">Верифик.</div></div>`
+        : `<div class="st-stat"><div class="st-stat-val" style="color:var(--gold)">${warnW}</div><div class="st-stat-label">Варнов</div></div>`;
+      const stat2 = isVerifier
+        ? `<div class="st-stat"><div class="st-stat-val" style="color:var(--teal)">${sum(m.reportsWeek)}</div><div class="st-stat-label">Репортов</div></div>`
+        : `<div class="st-stat"><div class="st-stat-val" style="color:var(--purple)">${muteW}</div><div class="st-stat-label">Мутов</div></div>`;
+      const stat3 = isVerifier
+        ? `<div class="st-stat"><div class="st-stat-val" style="color:var(--gold)">${warnW}</div><div class="st-stat-label">Варнов</div></div>`
+        : `<div class="st-stat"><div class="st-stat-val" style="color:var(--red)">${banW}</div><div class="st-stat-label">Банов</div></div>`;
+
+      const selfBadge = isSelf ? `<span class="sec-badge" style="background:var(--blue-dim);color:var(--blue)">Вы</span>` : '';
+      const verifBadge = (m.verifiesAll > 0)
+        ? `<span class="sec-badge" style="background:rgba(74,171,122,.1);color:var(--green)">${m.verifiesAll} верифик.</span>`
+        : '';
+
+      const card = document.createElement('div');
+      card.className = `staff-card ${cls}`;
+      card.dataset.role = branch;
+      card.innerHTML = `
+        <div class="staff-card-top"></div>
+        <div class="staff-card-body">
+          <div class="staff-head">
+            <div class="staff-av" style="${avUrl ? `background:url(${avUrl}) center/cover;background-size:cover` : `background:linear-gradient(135deg,${color},rgba(0,0,0,0.5))`}">
+              ${avUrl ? '' : initials(m.username || m.memberId)}
+            </div>
+            <div class="staff-info">
+              <div class="staff-name">${m.username || m.memberId}</div>
+              <div class="staff-role">${roleDisplay}</div>
+            </div>
+            <div class="staff-${m.online ? 'online' : 'offline'}"></div>
+          </div>
+          <div class="staff-stats">${stat1}${stat2}${stat3}</div>
+          <div class="week-chart" data-week='${JSON.stringify(weekData)}' data-color="${color}"></div>
+          <div class="week-days">
+            <span class="week-day">Пн</span><span class="week-day">Вт</span><span class="week-day">Ср</span>
+            <span class="week-day">Чт</span><span class="week-day">Пт</span><span class="week-day">Сб</span><span class="week-day">Вс</span>
+          </div>
+          <div class="staff-secondary">
+            ${voiceMs > 0    ? `<span class="sec-badge" style="background:var(--bg-4);color:var(--text-2)">${fmtVoice(voiceMs)}</span>` : ''}
+            ${msgsW > 0      ? `<span class="sec-badge" style="background:var(--bg-4);color:var(--text-3)">${msgsW} сообщений</span>` : ''}
+            ${nadmW > 0      ? `<span class="sec-badge" style="background:var(--red-dim);color:var(--red)">${nadmW} недопусков</span>` : ''}
+            ${verifBadge}
+            ${selfBadge}
+          </div>
+        </div>`;
+
+      const chartEl = card.querySelector('.week-chart');
+      renderChart(chartEl, weekData, color);
+
+      return card;
+    }
+
+    function renderOverview(totals) {
+      const map = {
+        'ov-members': totals.memberCount,
+        'ov-verif':   totals.verifiesAll,
+        'ov-warns':   totals.warnsAll,
+        'ov-mutes':   totals.mutesAll,
+        'ov-bans':    totals.bansAll,
+        'ov-nadm':    totals.nonAdmissionsAll,
+      };
+      Object.entries(map).forEach(([id, val]) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = Number(val || 0).toLocaleString('ru-RU');
+      });
+    }
+
+    function applyFilter(role) {
+      const cards = staffGrid.querySelectorAll('.staff-card');
+      let visible = 0;
+      cards.forEach(c => {
+        const show = role === 'all'
+          || (role === 'management' && MANAGEMENT_TYPES.has(c.dataset.role))
+          || c.dataset.role === role;
+        c.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+      staffCount.textContent = fmtCount(visible);
+    }
+
+    filterBar.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBar.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        applyFilter(btn.dataset.role);
+      });
+    });
+
+    async function init() {
+      let me = null;
+      try {
+        const r = await fetch('/api/me');
+        if (r.ok) me = await r.json();
+      } catch {}
+
+      const hasAccess = me && me.access?.level !== 'none';
+      if (!hasAccess) {
+        if (!me) {
+          location.href = '/auth/login?redirect=' + encodeURIComponent(location.pathname);
+        } else {
+          location.href = '/';
+        }
+        return;
+      }
+
+      try {
+        const r = await fetch('/api/staff/overview');
+        if (r.ok) renderOverview(await r.json());
+      } catch {}
+
+      try {
+        const r = await fetch('/api/staff');
+        if (!r.ok) {
+          staffGrid.innerHTML = `<div style="color:var(--text-3);padding:40px;text-align:center">Нет доступа или необходима авторизация через Discord</div>`;
+          return;
+        }
+        const { access, members } = await r.json();
+
+        if (access.level === 'staff') filterBar.style.display = 'none';
+
+        staffGrid.innerHTML = '';
+        members.forEach(m => {
+          const isSelf = me && m.memberId === me.id;
+          staffGrid.appendChild(buildCard(m, isSelf));
+        });
+        staffCount.textContent = fmtCount(members.length);
+      } catch (err) {
+        console.error(err);
+        staffGrid.innerHTML = `<div style="color:var(--text-3);padding:40px;text-align:center">Ошибка загрузки данных</div>`;
+      }
+    }
+
+    init();
+  </script>
+
+  <script src="/auth.js"></script>
+  <script>
+(async () => {
+  try {
+    const r = await fetch('/api/me');
+    if (!r.ok) throw new Error();
+    const me = await r.json();
+    document.getElementById('nav-right').innerHTML = `
+      <a href="/profile.html" class="site-nav-user" style="text-decoration:none">
+        ${me.avatar ? `<img class="site-nav-avatar" src="https://cdn.discordapp.com/avatars/${me.id}/${me.avatar}.webp?size=64" alt="">` : ''}
+        <span class="site-nav-username">${me.username}</span>
+      </a>
+      <a href="/auth/logout" class="site-nav-btn">Выйти</a>`;
+  } catch {
+    document.getElementById('nav-right').innerHTML = `<a href="/auth/login?redirect=${encodeURIComponent(location.pathname)}" class="site-nav-btn"><span class="site-nav-btn-dot"></span>Войти</a>`;
+  }
+})();
+  </script>
+</body>
+</html>

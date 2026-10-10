@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Клан — Talori</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Unbounded:wght@400;700;800;900&family=Noto+Serif+JP:wght@400;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="theme.css" />
+  <style>
+    :root {
+      --clan-color: #8b5fe8;
+    }
+
+    .page { max-width: 1160px; margin: 0 auto; padding: 48px 32px 80px; position: relative; z-index: 1; }
+
+    .back-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 13px; font-weight: 500; color: var(--text-3);
+      text-decoration: none; margin-bottom: 32px;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--text-2); }
+    .back-link svg { width: 14px; height: 14px; }
+
+    .clan-hero {
+      position: relative;
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 32px;
+    }
+
+    .clan-hero-bg {
+      height: 180px;
+      background: linear-gradient(135deg, #0e0a1c, #0a0e1c);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .clan-hero-glow {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 20% 60%, var(--clan-color-dim, rgba(139,95,232,0.25)) 0%, transparent 60%),
+                  radial-gradient(ellipse at 80% 30%, rgba(200,168,75,0.08) 0%, transparent 50%);
+    }
+
+    .clan-hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: linear-gradient(to bottom, transparent, black 30%, black 70%, transparent);
+    }
+
+    .clan-hero-body {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-top: none;
+      padding: 0 28px 24px;
+    }
+
+    .clan-hero-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 20px;
+      margin-top: -38px;
+      margin-bottom: 16px;
+    }
+
+    .clan-logo {
+      width: 76px; height: 76px;
+      border-radius: 14px;
+      border: 4px solid var(--bg-2);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Unbounded', sans-serif;
+      font-size: 22px; font-weight: 900;
+      color: white;
+      flex-shrink: 0;
+      background: var(--purple-dim);
+      color: var(--purple);
+    }
+
+    .clan-title-block { flex: 1; min-width: 0; padding-bottom: 4px; }
+
+    .clan-title {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 24px; font-weight: 900;
+      letter-spacing: -0.01em; line-height: 1.1;
+    }
+
+    .clan-subtitle { font-size: 13px; color: var(--text-3); margin-top: 4px; }
+
+    .clan-desc {
+      font-size: 14px; color: var(--text-2); line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    .clan-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .clan-meta-item {
+      background: var(--bg-3);
+      padding: 14px 16px;
+      display: flex; flex-direction: column; gap: 3px;
+    }
+
+    .clan-meta-val {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 18px; font-weight: 700;
+    }
+
+    .clan-meta-lbl {
+      font-size: 10px; color: var(--text-3);
+      text-transform: uppercase; letter-spacing: 0.08em;
+    }
+
+    .section-head {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 16px; margin-top: 40px;
+    }
+    .section-head:first-of-type { margin-top: 0; }
+    .section-head-title {
+      font-family: 'Unbounded', sans-serif; font-size: 13px; font-weight: 700;
+      letter-spacing: 0.03em; white-space: nowrap; color: var(--text);
+    }
+    .section-head-line { flex: 1; height: 1px; background: var(--border); }
+    .section-head-count { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3); }
+
+    .rank-table { background: var(--bg-2); border: 1px solid var(--border); border-radius: 2px; overflow: hidden; }
+    .rank-row {
+      display: grid; align-items: center; padding: 13px 22px; gap: 14px;
+      border-bottom: 1px solid var(--border); transition: background .15s;
+    }
+    .rank-row:hover { background: var(--bg-3); }
+    .rank-row:last-child { border-bottom: none; }
+    .rank-row.head { background: transparent !important; cursor: default; }
+    .rank-row.head .rank-col { font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); }
+
+    .rank-player { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .rank-av {
+      width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+      background: var(--bg-4); display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: var(--text-2);
+      background-size: cover;
+    }
+    .rank-name { font-size: 14px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .rank-tag  { font-size: 10px; color: var(--text-3); margin-top: 1px; }
+    .rank-col  { font-size: 13px; color: var(--text-2); }
+    .rank-val  { font-family: 'Unbounded', sans-serif; font-size: 14px; font-weight: 700; color: var(--text); }
+    .rank-val.accent { color: var(--ink); }
+
+    .role-badge {
+      display: inline-flex; align-items: center;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+      padding: 3px 8px; border-radius: 2px; white-space: nowrap;
+    }
+    .role-leader   { background: var(--gold-dim);   color: var(--gold); }
+    .role-deputy   { background: rgba(91,125,232,0.1); color: var(--blue); }
+    .role-veteran  { background: var(--purple-dim); color: var(--purple); }
+    .role-member   { background: var(--bg-4);       color: var(--text-3); }
+    .role-recruit  { background: var(--bg-4);       color: var(--text-3); }
+    .role-newbie   { background: var(--bg-4);       color: var(--text-3); }
+
+    .state-msg { color: var(--text-3); padding: 48px 0; text-align: center; font-size: 13px; }
+
+    .clan-apply-btn {
+      flex-shrink: 0; align-self: flex-end; margin-bottom: 4px;
+      display: inline-flex; align-items: center; gap: 9px;
+      padding: 13px 22px; border-radius: 10px; cursor: pointer;
+      background: var(--clan-color); color: #fff; border: none;
+      font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700;
+      transition: transform .12s, box-shadow .16s, opacity .16s;
+    }
+    .clan-apply-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(139,95,232,.35); }
+    .clan-apply-btn:disabled { opacity: .5; cursor: default; transform: none; box-shadow: none; }
+    .clan-apply-btn svg { width: 16px; height: 16px; }
+
+    .modal-bg {
+      position: fixed; inset: 0; z-index: 500; display: none;
+      align-items: center; justify-content: center; padding: 24px;
+      background: rgba(0,0,0,.7); backdrop-filter: blur(14px);
+    }
+    .modal-bg.open { display: flex; animation: mfade .25s ease; }
+    @keyframes mfade { from { opacity: 0 } to { opacity: 1 } }
+    .modal-card {
+      width: 100%; max-width: 440px; background: var(--bg-2);
+      border: 1px solid var(--border-h); border-radius: 16px; padding: 28px;
+      box-shadow: 0 40px 100px rgba(0,0,0,.7);
+    }
+    .modal-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .3em; text-transform: uppercase; color: var(--clan-color); margin-bottom: 8px; }
+    .modal-title { font-family: 'Unbounded', sans-serif; font-weight: 800; font-size: 20px; margin-bottom: 6px; }
+    .modal-sub { font-size: 13px; color: var(--text-3); line-height: 1.6; margin-bottom: 18px; }
+    .modal-card textarea {
+      width: 100%; min-height: 92px; resize: vertical; background: var(--bg-3);
+      border: 1px solid var(--border); border-radius: 10px; color: var(--text);
+      font-family: 'Inter', sans-serif; font-size: 14px; padding: 12px 14px; outline: none;
+      transition: border-color .15s; margin-bottom: 16px;
+    }
+    .modal-card textarea:focus { border-color: var(--clan-color); }
+    .modal-actions { display: flex; gap: 10px; }
+    .modal-actions button {
+      flex: 1; padding: 13px; border-radius: 10px; cursor: pointer;
+      font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700; transition: .16s;
+    }
+    .modal-send { background: var(--clan-color); color: #fff; border: none; }
+    .modal-send:hover { box-shadow: 0 10px 26px rgba(139,95,232,.32); }
+    .modal-send:disabled { opacity: .5; cursor: default; box-shadow: none; }
+    .modal-cancel { background: transparent; color: var(--text-2); border: 1px solid var(--border-h); }
+    .modal-cancel:hover { color: var(--text); border-color: var(--text-3); }
+    .modal-status { font-size: 13px; margin-top: 14px; text-align: center; min-height: 18px; line-height: 1.5; }
+    .modal-status.ok { color: var(--green); }
+    .modal-status.err { color: #ec8080; }
+
+    .clan-hero-bg,.clan-hero-grid{display:none!important}
+    .clan-hero{background:var(--bg-2);border:1px solid var(--border);border-radius:2px;overflow:hidden;position:relative;margin-bottom:32px}
+    .clan-hero::before{content:'';position:absolute;top:-1px;left:-1px;width:60px;height:1px;background:var(--ink);opacity:.5;z-index:2}
+    .clan-hero::after{content:'';position:absolute;top:-1px;left:-1px;width:1px;height:60px;background:var(--ink);opacity:.5;z-index:2}
+    #clan-hero-glow{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5}
+    .clan-hero-body{position:relative;z-index:1;padding:28px 28px 24px!important;background:transparent!important;border:none!important}
+    .clan-hero-row{margin-top:0!important;align-items:center!important}
+    .clan-logo{border:2px solid var(--border-h)!important;border-radius:12px!important}
+    .clan-layout{display:grid;grid-template-columns:1fr 280px;gap:28px;align-items:start}
+    .clan-aside{position:sticky;top:80px;background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:22px 20px;display:flex;flex-direction:column;gap:0}
+    .aside-eyebrow{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--text-3);margin-bottom:16px}
+    .aside-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
+    .aside-row:last-child{border-bottom:none}
+    .aside-key{font-size:12px;color:var(--text-2)}
+    .aside-val{font-family:'Unbounded',sans-serif;font-size:13px;font-weight:700;color:var(--text)}
+    .aside-val.gold{color:var(--gold)}.aside-val.ink{color:var(--ink)}
+    .aside-badge{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:20px;background:rgba(200,168,75,.1);color:var(--gold);margin-bottom:14px}
+    .aside-divider{height:1px;background:var(--border);margin:12px 0}
+    @media(max-width:900px){.clan-layout{grid-template-columns:1fr}.clan-aside{position:static}}
+    @media(max-width:768px){.nav-links{display:none}.page{padding:24px 16px 60px}.members-row{grid-template-columns:1fr 80px 80px!important}.members-row .hide-sm{display:none}}
+  </style>
+</head>
+<body>
+
+  <div class="page-bg" aria-hidden="true"></div>
+
+  <nav class="site-nav">
+    <div class="site-nav-inner">
+      <a href="/" class="site-nav-logo">
+        <img src="/Talori1.png" alt="Talori"/>
+        <span>
+          <span class="site-nav-logo-text">TALORI</span>
+          <span class="site-nav-logo-sub">コミュニティ</span>
+        </span>
+      </a>
+      <div class="site-nav-links">
+        <a href="/events.html" data-jp="イベント">СОБЫТИЯ</a>
+        <a href="/leaderboard.html" data-jp="ランキング">ТОПЫ</a>
+        <a href="/mafia.html" data-jp="マフィア">МАФИЯ</a>
+        <a href="/poker.html" data-jp="ポーカー">ПОКЕР</a>
+        <a href="/clan.html" data-jp="クラン" class="active">КЛАНЫ</a>
+        <a href="/staff.html" data-jp="スタッフ">СТАФФ</a>
+      </div>
+      <div class="site-nav-right" id="nav-right">
+      </div>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <a href="/leaderboard.html" class="back-link">
+      <svg viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Назад к рейтингам
+    </a>
+
+    <div class="clan-hero" id="clan-hero">
+      <div id="clan-hero-glow"></div>
+      <div class="clan-hero-body">
+        <div class="clan-hero-row">
+          <div class="clan-logo" id="clan-logo">—</div>
+          <div class="clan-title-block">
+            <div class="clan-title" id="clan-title">Загрузка...</div>
+            <div class="clan-subtitle" id="clan-subtitle">Основатель: —</div>
+          </div>
+          <button class="clan-apply-btn" id="apply-btn" style="display:none" onclick="openApply()">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Подать заявку
+          </button>
+        </div>
+        <div class="clan-desc" id="clan-desc" style="display:none"></div>
+        <div class="clan-meta-grid" id="clan-meta"></div>
+      </div>
+    </div>
+
+      </div>
+    </div>
+
+    <div class="clan-layout">
+      <div class="clan-main">
+        <div class="section-head">
+          <div class="section-head-title">Участники</div>
+          <div class="section-head-line"></div>
+          <div class="section-head-count" id="members-count"></div>
+        </div>
+        <div class="rank-table">
+          <div class="rank-row head members-row" style="grid-template-columns:1fr 90px 100px 120px 110px">
+            <div class="rank-col">Игрок</div>
+            <div class="rank-col">Роль</div>
+            <div class="rank-col hide-sm">Активность</div>
+            <div class="rank-col hide-sm">Голос</div>
+            <div class="rank-col">Сообщений</div>
+          </div>
+          <div id="members-rows"><div class="state-msg">Загрузка...</div></div>
+        </div>
+      </div>
+      <aside class="clan-aside" id="user-sidebar">
+        <div class="aside-eyebrow">Твои данные</div>
+        <div id="aside-staff-badge" style="display:none" class="aside-badge">★ Стафф</div>
+        <div class="aside-row"><span class="aside-key">Игр в мафии</span><span class="aside-val" id="as-games">0</span></div>
+        <div class="aside-row"><span class="aside-key">Побед</span><span class="aside-val gold" id="as-wins">0</span></div>
+        <div class="aside-row"><span class="aside-key">Винрейт</span><span class="aside-val ink" id="as-wr">—</span></div>
+        <div class="aside-divider"></div>
+        <div class="aside-row"><span class="aside-key">Уровень</span><span class="aside-val" id="as-level">0</span></div>
+        <div class="aside-row"><span class="aside-key">Сообщений</span><span class="aside-val" id="as-messages">0</span></div>
+        <div class="aside-row"><span class="aside-key">Голос</span><span class="aside-val" id="as-voice">—</span></div>
+        <div class="aside-row"><span class="aside-key">Репутация</span><span class="aside-val" id="as-rep">0</span></div>
+        <div id="aside-staff-section" style="display:none">
+          <div class="aside-divider"></div>
+          <div class="aside-eyebrow" style="margin-top:4px">Стафф</div>
+          <div class="aside-row"><span class="aside-key">Должность</span><span class="aside-val ink" id="as-staff-role">—</span></div>
+        </div>
+      </aside>
+    </div>
+
+  </div>
+
+  <div class="modal-bg" id="apply-modal">
+    <div class="modal-card">
+      <div class="modal-eyebrow">Вступление · クラン</div>
+      <div class="modal-title" id="apply-title">Заявка в клан</div>
+      <div class="modal-sub">Заявка придёт лидеру клана в личные сообщения. Если ЛС закрыты — в чат клана. Можешь добавить пару слов о себе.</div>
+      <textarea id="apply-message" placeholder="Например: активно играю в мафию по вечерам, хочу в командные турниры…" maxlength="500"></textarea>
+      <div class="modal-actions">
+        <button class="modal-cancel" onclick="closeApply()">Отмена</button>
+        <button class="modal-send" id="apply-send" onclick="sendApply()">Отправить заявку</button>
+      </div>
+      <div class="modal-status" id="apply-status"></div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <div class="site-footer-brand">
+        <a href="/" class="site-footer-logo">
+          <img src="/Talori1.png" alt="Talori"/>
+          <span class="site-footer-logo-text">TALORI</span>
+        </a>
+        <p class="site-footer-desc">Японское ноир-комьюнити в Discord. Мафия, события, кланы — всё на одном сервере.</p>
+      </div>
+      <div>
+        <div class="site-footer-col-title">Навигация</div>
+        <div class="site-footer-links">
+          <a href="/events.html">События</a>
+          <a href="/leaderboard.html">Рейтинги</a>
+          <a href="/mafia.html">Мафия</a>
+          <a href="/clan.html">Кланы</a>
+          <a href="/staff.html">Состав</a>
+        </div>
+      </div>
+      <div>
+        <div class="site-footer-col-title">Аккаунт</div>
+        <div class="site-footer-links">
+          <a href="/profile.html">Профиль</a>
+          <a href="/auth/login">Войти через Discord</a>
+          <a href="/auth/logout">Выйти</a>
+        </div>
+      </div>
+    </div>
+    <div class="site-footer-bottom">
+      <span class="site-footer-copy">© MMXXVI TALORI · ALL RIGHTS RESERVED</span>
+      <span class="site-footer-kanji">武道の道は永遠に</span>
+    </div>
+  </footer>
+
+  <script>
+    function fmtNum(n) { return Number(n || 0).toLocaleString('ru-RU'); }
+    function fmtVoice(ms) {
+      const s = Math.floor((ms || 0) / 1000);
+      const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
+      return h > 0 ? `${h}ч ${m}м` : m > 0 ? `${m}м` : '—';
+    }
+    function inits(name) { return (name || '?').split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2); }
+    function avEl(id, hash, username) {
+      const url = hash ? `https://cdn.discordapp.com/avatars/${id}/${hash}.png?size=64` : null;
+      return url
+        ? `<div class="rank-av" style="background:url(${url}) center/cover no-repeat;overflow:hidden;"></div>`
+        : `<div class="rank-av">${inits(username)}</div>`;
+    }
+
+    const ROLE_LABELS = {
+      leader: 'Лидер', deputy: 'Заместитель', veteran: 'Ветеран',
+      member: 'Участник', recruit: 'Рекрут', newbie: 'Новичок',
+    };
+    const ROLE_CLS = {
+      leader: 'role-leader', deputy: 'role-deputy', veteran: 'role-veteran',
+      member: 'role-member', recruit: 'role-recruit', newbie: 'role-newbie',
+    };
+
+    async function initClan() {
+      const params = new URLSearchParams(location.search);
+      const id = params.get('id');
+      if (!id) { document.getElementById('clan-title').textContent = 'Клан не найден'; return; }
+
+      try {
+        const res = await fetch(`/api/clan/${id}`);
+        if (res.status === 401) { location.href = '/'; return; }
+        if (!res.ok) { document.getElementById('clan-title').textContent = 'Клан не найден'; return; }
+        const clan = await res.json();
+
+        document.title = `${clan.clanName} — Talori`;
+
+        const color = clan.clanColor ? `#${Number(clan.clanColor).toString(16).padStart(6, '0')}` : '#8b5fe8';
+        document.getElementById('clan-hero-glow').style.background =
+          `radial-gradient(ellipse at 20% 60%, ${color}33 0%, transparent 60%), radial-gradient(ellipse at 80% 30%, rgba(200,168,75,0.08) 0%, transparent 50%)`;
+
+        const logoEl = document.getElementById('clan-logo');
+        if (clan.clanLogo) {
+          logoEl.style.cssText = `background:url(${clan.clanLogo}) center/cover;font-size:0;border:4px solid var(--bg-2);`;
+        } else {
+          logoEl.textContent = clan.clanName.slice(0, 3).toUpperCase();
+          logoEl.style.background = color;
+          logoEl.style.color = '#fff';
+        }
+
+        document.getElementById('clan-title').textContent = clan.clanName;
+        document.getElementById('clan-subtitle').textContent = `Основатель: ${clan.owner?.username || '—'}`;
+
+        window._clanId = id;
+        window._clanName = clan.clanName;
+        setupApply(clan);
+
+        if (clan.clanDescription) {
+          const descEl = document.getElementById('clan-desc');
+          descEl.textContent = clan.clanDescription;
+          descEl.style.display = '';
+        }
+
+        const memberCount = (clan.members || []).length;
+        const fmtVoiceSec = (s) => { const h = Math.floor((s||0)/3600), m = Math.floor(((s||0)%3600)/60); return h > 0 ? `${h}ч ${m}м` : m > 0 ? `${m}м` : '—'; };
+        document.getElementById('clan-meta').innerHTML = [
+          { val: `${memberCount} / ${clan.maxMembers}`, lbl: 'Участников', color: '' },
+          { val: `Ур. ${clan.clanLevel || 1}`, lbl: 'Уровень', color: '' },
+          { val: fmtNum(clan.clanRating), lbl: 'Рейтинг', color: 'var(--gold)' },
+          { val: fmtNum(clan.clanBalance), lbl: 'Баланс клана', color: 'var(--green)' },
+          { val: fmtVoiceSec(clan.totalVoiceTime), lbl: 'Голос (всего)', color: 'var(--purple)' },
+          { val: fmtNum(clan.totalMessages), lbl: 'Сообщений', color: '' },
+        ].map(i => `<div class="clan-meta-item"><div class="clan-meta-val" style="color:${i.color||'var(--text)'}">${i.val}</div><div class="clan-meta-lbl">${i.lbl}</div></div>`).join('');
+
+        const cntEl = document.getElementById('members-count');
+        if (cntEl) cntEl.textContent = `${memberCount} чел.`;
+        const rowsEl = document.getElementById('members-rows');
+        if (!clan.members || !clan.members.length) {
+          rowsEl.innerHTML = '<div class="state-msg">Участников нет</div>';
+          return;
+        }
+        rowsEl.innerHTML = clan.members.map(m => {
+          const roleCls  = ROLE_CLS[m.role]   || 'role-member';
+          const roleLbl  = ROLE_LABELS[m.role] || m.role || 'Участник';
+          const voiceMs  = m.voiceTime || 0;
+          return `
+          <div class="rank-row members-row" style="grid-template-columns:1fr 90px 100px 120px 110px">
+            <div class="rank-player">
+              ${avEl(m.id, m.avatar, m.username)}
+              <div><div class="rank-name">${m.username || `#${m.userId.slice(-4)}`}</div></div>
+            </div>
+            <div><span class="role-badge ${roleCls}">${roleLbl}</span></div>
+            <div class="rank-col hide-sm">${fmtNum(m.activityPoints)}</div>
+            <div class="rank-col hide-sm">${fmtVoice(voiceMs)}</div>
+            <div class="rank-col">${fmtNum(m.messageCount)}</div>
+          </div>`;
+        }).join('');
+
+      } catch (e) {
+        console.error('Clan init error:', e);
+        document.getElementById('clan-title').textContent = 'Ошибка загрузки';
+      }
+    }
+
+    initClan();
+    (async function loadSidebar(){
+      try{
+        const r=await fetch('/api/me');
+        if(!r.ok)return;
+        const me=await r.json();
+        const s=n=>document.getElementById(n);
+        const fmtV=ms=>{const h=Math.floor((ms||0)/3600000);const m=Math.floor(((ms||0)%3600000)/60000);return h>0?`${h}ч ${m}м`:m>0?`${m}м`:'—';};
+        const g=me.stats?.mafia?.games||0, w=me.stats?.mafia?.wins||0;
+        s('as-games').textContent=g;
+        s('as-wins').textContent=w;
+        s('as-wr').textContent=g>0?Math.round(w/g*100)+'%':'—';
+        s('as-level').textContent=me.level||0;
+        s('as-messages').textContent=(me.stats?.messages||0).toLocaleString('ru-RU');
+        s('as-voice').textContent=fmtV(me.stats?.voiceMs);
+        s('as-rep').textContent=me.reputation||0;
+        if(me.isStaff||me.isAdmin||me.isMod){
+          s('aside-staff-badge').style.display='inline-flex';
+          s('aside-staff-section').style.display='block';
+          s('as-staff-role').textContent=me.staffRole||'Стафф';
+        }
+      }catch{}
+    })();
+    async function setupApply(clan) {
+      const btn = document.getElementById('apply-btn');
+      let me = null;
+      try { const r = await fetch('/api/me'); if (r.ok) me = await r.json(); } catch {}
+      if (!me) {
+        btn.style.display = '';
+        btn.onclick = () => location.href = '/auth/login?redirect=' + encodeURIComponent(location.pathname + location.search);
+        return;
+      }
+      const isOwner = String(clan.ownerId) === String(me.id);
+      const isMember = (clan.members || []).some(m => String(m.userId) === String(me.id));
+      const full = (clan.members || []).length >= clan.maxMembers;
+      if (isOwner || isMember) return;
+      btn.style.display = '';
+      if (full) {
+        btn.disabled = true;
+        btn.innerHTML = 'Клан заполнен';
+      }
+    }
+
+    function openApply() {
+      document.getElementById('apply-title').textContent = `Заявка в «${window._clanName || 'клан'}»`;
+      document.getElementById('apply-status').textContent = '';
+      document.getElementById('apply-status').className = 'modal-status';
+      document.getElementById('apply-modal').classList.add('open');
+    }
+    function closeApply() { document.getElementById('apply-modal').classList.remove('open'); }
+
+    async function sendApply() {
+      const send = document.getElementById('apply-send');
+      const status = document.getElementById('apply-status');
+      const msg = document.getElementById('apply-message').value.trim();
+      send.disabled = true; send.textContent = 'Отправляем…';
+      status.className = 'modal-status'; status.textContent = '';
+      try {
+        const r = await fetch(`/api/clan/${window._clanId}/apply`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: msg }),
+        });
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(d.error || 'Ошибка отправки');
+        status.className = 'modal-status ok';
+        status.textContent = d.via === 'chat'
+          ? '✓ Заявка отправлена в чат клана (ЛС лидера закрыты).'
+          : '✓ Заявка отправлена лидеру в личные сообщения.';
+        send.textContent = 'Отправлено ✓';
+        document.getElementById('apply-btn').disabled = true;
+        setTimeout(closeApply, 2600);
+      } catch (e) {
+        status.className = 'modal-status err';
+        status.textContent = e.message || 'Не удалось отправить заявку.';
+        send.disabled = false; send.textContent = 'Отправить заявку';
+      }
+    }
+    document.getElementById('apply-modal').addEventListener('click', e => {
+      if (e.target.id === 'apply-modal') closeApply();
+    });
+  </script>
+  <script src="/auth.js"></script>
+  <script>
+(async () => {
+  try {
+    const r = await fetch('/api/me');
+    if (!r.ok) throw new Error();
+    const me = await r.json();
+    document.getElementById('nav-right').innerHTML = `
+      <a href="/profile.html" class="site-nav-user" style="text-decoration:none">
+        ${me.avatar ? `<img class="site-nav-avatar" src="https://cdn.discordapp.com/avatars/${me.id}/${me.avatar}.webp?size=64" alt="">` : ''}
+        <span class="site-nav-username">${me.username}</span>
+      </a>
+      <a href="/auth/logout" class="site-nav-btn">Выйти</a>`;
+  } catch {
+    document.getElementById('nav-right').innerHTML = `<a href="/auth/login?redirect=${encodeURIComponent(location.pathname)}" class="site-nav-btn"><span class="site-nav-btn-dot"></span>Войти</a>`;
+  }
+})();
+  </script>
+</body>
+</html>

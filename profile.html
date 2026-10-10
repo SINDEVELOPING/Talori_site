@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Профиль — Talori</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Unbounded:wght@400;700;800;900&family=Noto+Serif+JP:wght@400;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="theme.css"/>
+  <style>
+    .page { max-width: 1160px; margin: 0 auto; padding: 40px 32px 80px; position: relative; z-index: 1; }
+
+    .ph {
+      position: relative; background: var(--bg-2);
+      border: 1px solid var(--border); border-radius: 2px;
+      overflow: hidden; margin-bottom: 16px; padding: 36px 36px 30px; min-height: 188px;
+    }
+    .ph::before { content: ''; position: absolute; top: -1px; left: -1px; width: 100px; height: 1px; background: var(--ink); z-index: 3; }
+    .ph::after  { content: ''; position: absolute; top: -1px; left: -1px; width: 1px; height: 100px; background: var(--ink); z-index: 3; }
+    .ph-corner  { position: absolute; bottom: -1px; right: -1px; width: 44px; height: 44px; border-right: 1px solid var(--border-h); border-bottom: 1px solid var(--border-h); z-index: 3; }
+    .ph-kanji   { position: absolute; right: -6px; top: -14px; z-index: 1; font-family: 'Noto Serif JP', serif; font-weight: 900; font-size: 180px; line-height: 1; color: rgba(243,241,236,.028); user-select: none; pointer-events: none; }
+    .ph-banner  { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+    .ph-bi      { position: absolute; inset: -8%; background: center 25%/cover no-repeat; filter: brightness(.18) saturate(.75) blur(1px); opacity: 0; transition: opacity .7s; }
+    .ph-bi.vis  { opacity: 1; }
+    .ph-bf      { position: absolute; inset: 0; background: linear-gradient(90deg,var(--bg-2) 0%,rgba(12,12,14,.45) 32%,rgba(12,12,14,.45) 68%,var(--bg-2) 100%), linear-gradient(180deg,rgba(12,12,14,.2) 0%,var(--bg-2) 90%); }
+    .ph-glow    { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+    .ph-inner   { position: relative; z-index: 2; display: flex; gap: 28px; align-items: flex-start; }
+    .ph-av { width: 100px; height: 100px; border-radius: 50%; flex-shrink: 0; border: 2px solid var(--border-h); background: var(--bg-4); display: flex; align-items: center; justify-content: center; font-family: 'Unbounded',sans-serif; font-size: 28px; font-weight: 900; color: var(--text-3); overflow: hidden; position: relative; }
+    .ph-av img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
+    .ph-ring { position: absolute; inset: -5px; border-radius: 50%; background: conic-gradient(from 180deg,var(--ink) 0%,transparent 40%,transparent 60%,var(--ink) 100%); opacity: .22; animation: ring-spin 14s linear infinite; pointer-events: none; }
+    @keyframes ring-spin { to { transform: rotate(360deg); } }
+    .ph-info { flex: 1; min-width: 0; }
+    .ph-ey { font-family: 'JetBrains Mono',monospace; font-size: 10px; letter-spacing: .3em; text-transform: uppercase; color: var(--text-3); margin-bottom: 6px; display: flex; align-items: center; gap: 10px; }
+    .ph-ey::before { content: ''; width: 20px; height: 1px; background: var(--ink); opacity: .5; }
+    .ph-name { font-family: 'Unbounded',sans-serif; font-size: clamp(22px,3vw,34px); font-weight: 900; letter-spacing: -.02em; line-height: 1.05; margin-bottom: 12px; }
+    .ph-badges { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 20px; }
+    .pb { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 2px; font-family: 'JetBrains Mono',monospace; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .pb-lv { background: rgba(200,184,154,.08); border: 1px solid rgba(200,184,154,.2); color: var(--ink); }
+    .pb-rk { background: rgba(200,168,75,.08); border: 1px solid rgba(200,168,75,.28); color: var(--gold); }
+    .pb-cl { background: var(--purple-dim); border: 1px solid rgba(139,95,232,.25); color: var(--purple); }
+    .pb-st { background: rgba(224,85,85,.08); border: 1px solid rgba(224,85,85,.28); color: var(--red); }
+    .pb-ad { background: rgba(168,56,56,.12); border: 1px solid rgba(168,56,56,.3); color: #e87c7c; }
+    .pb-demo { background: rgba(200,168,75,.06); border: 1px solid rgba(200,168,75,.18); color: var(--gold); font-size: 9px; opacity: .7; }
+    .ph-qs { display: flex; gap: 0; flex-wrap: wrap; }
+    .pq { display: flex; flex-direction: column; gap: 2px; padding: 0 20px; border-right: 1px solid var(--border); }
+    .pq:first-child { padding-left: 0; }
+    .pq:last-child { border-right: none; }
+    .pq-v { font-family: 'Unbounded',sans-serif; font-size: 17px; font-weight: 800; letter-spacing: -.01em; }
+    .pq-l { font-size: 10px; color: var(--text-3); letter-spacing: .1em; text-transform: uppercase; }
+    .ph-xp { margin-top: 20px; }
+    .ph-xp-m { display: flex; justify-content: space-between; font-family: 'JetBrains Mono',monospace; font-size: 10px; color: var(--text-3); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 6px; }
+    .ph-xp-t { height: 2px; background: var(--bg-4); border-radius: 2px; overflow: hidden; }
+    .ph-xp-f { height: 100%; background: linear-gradient(90deg,var(--ink),var(--gold)); border-radius: 2px; transition: width 1.2s cubic-bezier(.2,.7,.2,1); width: 0%; }
+
+    .sr { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 16px; }
+    .sc { background: var(--bg-2); border: 1px solid var(--border); border-radius: 2px; padding: 18px 18px 14px; position: relative; transition: border-color .2s; }
+    .sc:hover { border-color: var(--border-h); }
+    .sc::before { content: ''; position: absolute; top: -1px; left: -1px; width: 24px; height: 1px; background: var(--ink); opacity: .4; }
+    .sc-n { font-family: 'JetBrains Mono',monospace; font-size: 9px; letter-spacing: .25em; color: var(--text-3); margin-bottom: 8px; text-transform: uppercase; }
+    .sc-v { font-family: 'Unbounded',sans-serif; font-size: 22px; font-weight: 800; line-height: 1; margin-bottom: 5px; letter-spacing: -.01em; }
+    .sc-l { font-size: 10px; color: var(--text-3); letter-spacing: .08em; text-transform: uppercase; }
+
+    .pl { display: grid; grid-template-columns: 1fr 288px; gap: 16px; align-items: start; }
+    .pm { display: flex; flex-direction: column; gap: 14px; }
+    .ps { display: flex; flex-direction: column; gap: 12px; }
+
+    .pc { background: var(--bg-2); border: 1px solid var(--border); border-radius: 2px; overflow: hidden; position: relative; transition: border-color .2s; }
+    .pc:hover { border-color: var(--border-h); }
+    .pc::before { content: ''; position: absolute; top: -1px; left: -1px; width: 30px; height: 1px; background: var(--ink); opacity: .4; }
+    .pc::after  { content: ''; position: absolute; top: -1px; left: -1px; width: 1px; height: 30px; background: var(--ink); opacity: .4; }
+    .pc-h { padding: 0 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; min-height: 48px; }
+    .pc-t { font-family: 'Unbounded',sans-serif; font-size: 12px; font-weight: 700; letter-spacing: .05em; }
+    .pc-m { font-family: 'JetBrains Mono',monospace; font-size: 10px; color: var(--text-3); letter-spacing: .15em; text-transform: uppercase; }
+    .pc-b  { padding: 18px 20px; }
+    .pc-bs { padding: 12px 18px; }
+
+    .sub-bar { display: flex; gap: 5px; flex-wrap: wrap; }
+    .sub-btn { font-family: 'Inter',sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 6px 13px; border-radius: 2px; cursor: pointer; background: var(--bg-3); border: 1px solid var(--border); color: rgba(243,241,236,.45); transition: all .15s; }
+    .sub-btn:hover { color: var(--text-2); border-color: var(--border-h); }
+    .sub-btn.active { background: rgba(200,184,154,.08); border-color: rgba(200,184,154,.28); color: var(--ink); }
+    .sub-pane { display: none; }
+    .sub-pane.active { display: block; animation: spfade .22s ease both; }
+    @keyframes spfade { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+
+    .rr { display: grid; grid-template-columns: 108px 1fr 50px 54px; gap: 10px; align-items: center; padding: 9px 0; border-bottom: 1px solid rgba(243,241,236,.04); }
+    .rr:last-child { border-bottom: none; }
+    .rr.rr-h { padding-bottom: 8px; border-bottom: 1px solid var(--border); margin-bottom: 3px; }
+    .rr.rr-h span { font-family: 'JetBrains Mono',monospace; font-size: 9px; color: var(--text-3); letter-spacing: .12em; text-transform: uppercase; }
+    .rr.rr-h span:nth-child(3),.rr.rr-h span:nth-child(4) { text-align: right; }
+    .rn { display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 600; color: var(--text); }
+    .rd { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .rb { display: flex; align-items: center; }
+    .rb-t { flex: 1; height: 3px; background: var(--bg-4); border-radius: 2px; overflow: hidden; }
+    .rb-f { height: 100%; border-radius: 2px; transition: width .9s cubic-bezier(.2,.7,.2,1); }
+    .rg { font-size: 11px; color: var(--text-3); text-align: right; }
+    .rw { font-family: 'Unbounded',sans-serif; font-size: 11px; font-weight: 700; text-align: right; }
+
+    .tops-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(140px,1fr)); gap: 10px; }
+    .top-card { background: var(--bg-3); border: 1px solid var(--border); border-radius: 2px; padding: 14px 14px 12px; position: relative; transition: border-color .2s; }
+    .top-card:hover { border-color: var(--border-h); }
+    .top-card::before { content: ''; position: absolute; top: -1px; left: -1px; width: 16px; height: 1px; background: var(--ink); opacity: .4; }
+    .top-cat { font-family: 'JetBrains Mono',monospace; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--text-2); margin-bottom: 6px; }
+    .top-rank { font-family: 'Unbounded',sans-serif; font-size: 28px; font-weight: 900; letter-spacing: -.02em; line-height: 1; margin-bottom: 4px; }
+    .top-rank.gold { color: var(--gold); }
+    .top-rank.silver { color: #aab4c8; }
+    .top-rank.bronze { color: #c87a55; }
+    .top-val { font-size: 11px; color: var(--text-2); }
+
+    .cc { background: var(--bg-2); border: 1px solid var(--border); border-radius: 2px; overflow: hidden; position: relative; padding: 20px 18px; }
+    .cc::before { content: ''; position: absolute; top: -1px; left: -1px; width: 28px; height: 1px; background: var(--ink); opacity: .4; }
+    .cc-g { position: absolute; inset: 0; pointer-events: none; }
+    .cc-i { position: relative; z-index: 1; }
+    .cc-ey { font-family: 'JetBrains Mono',monospace; font-size: 9px; letter-spacing: .3em; text-transform: uppercase; color: var(--text-3); margin-bottom: 12px; }
+    .cc-hd { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .cc-logo { width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-family: 'Unbounded',sans-serif; font-size: 13px; font-weight: 900; border: 2px solid var(--border-h); overflow: hidden; }
+    .cc-logo img { width: 100%; height: 100%; object-fit: cover; }
+    .cc-name { font-family: 'Unbounded',sans-serif; font-size: 14px; font-weight: 800; letter-spacing: -.01em; line-height: 1.1; }
+    .cc-role { font-size: 11px; color: var(--text-3); margin-top: 3px; }
+    .cc-sg { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 2px; overflow: hidden; margin-bottom: 12px; }
+    .cs { background: var(--bg-3); padding: 9px 11px; }
+    .csv { font-family: 'Unbounded',sans-serif; font-size: 13px; font-weight: 700; line-height: 1; }
+    .csl { font-size: 9px; color: var(--text-3); letter-spacing: .08em; text-transform: uppercase; margin-top: 2px; }
+
+    .ml { display: flex; flex-direction: column; }
+    .mr { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(243,241,236,.04); }
+    .mr:last-child { border-bottom: none; }
+    .mk { font-size: 12px; color: var(--text-2); }
+    .mv { font-family: 'Unbounded',sans-serif; font-size: 12px; font-weight: 700; color: var(--text); }
+
+    .hm { display: grid; grid-template-columns: repeat(24,1fr); gap: 2px; }
+    .hc { aspect-ratio: 1; border-radius: 1px; background: var(--bg-4); }
+    .hc.l1 { background: rgba(200,184,154,.18); }
+    .hc.l2 { background: rgba(200,184,154,.38); }
+    .hc.l3 { background: rgba(200,184,154,.60); }
+    .hc.l4 { background: var(--ink); opacity: .8; }
+    .hm-l { display: flex; justify-content: space-between; margin-top: 5px; font-family: 'JetBrains Mono',monospace; font-size: 9px; color: var(--text-3); letter-spacing: .06em; }
+
+    .lp { text-align: center; padding: 100px 40px; }
+    .lp h2 { font-family: 'Unbounded',sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 10px; }
+    .lp p { font-size: 13px; color: var(--text-2); margin-bottom: 22px; }
+
+    @media (max-width: 960px) { .pl { grid-template-columns: 1fr; } .sr { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 600px) {
+      .page { padding: 20px 14px 60px; } .ph { padding: 22px 18px 20px; }
+      .ph-inner { flex-direction: column; gap: 14px; } .ph-av { width: 80px; height: 80px; font-size: 22px; }
+      .pq { padding: 0 12px; } .rr { grid-template-columns: 90px 1fr 44px; } .rr .rw { display: none; }
+      .sr { grid-template-columns: 1fr 1fr; } .tops-grid { grid-template-columns: repeat(2,1fr); }
+      .sub-btn { padding: 5px 10px; font-size: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-bg" aria-hidden="true"></div>
+
+  <nav class="site-nav">
+    <div class="site-nav-inner">
+      <a href="/" class="site-nav-logo">
+        <img src="Talori1.png" alt="Talori"/>
+        <span><span class="site-nav-logo-text">TALORI</span><span class="site-nav-logo-sub">コミュニティ</span></span>
+      </a>
+      <div class="site-nav-links">
+        <a href="/events.html" data-jp="イベント">СОБЫТИЯ</a>
+        <a href="/leaderboard.html" data-jp="ランキング">ТОПЫ</a>
+        <a href="/mafia.html" data-jp="マフィア">МАФИЯ</a>
+        <a href="/poker.html" data-jp="ポーカー">ПОКЕР</a>
+        <a href="/clan.html" data-jp="クラン">КЛАНЫ</a>
+        <a href="/staff.html" data-jp="スタッフ">СТАФФ</a>
+      </div>
+      <div class="site-nav-right" id="nav-right"></div>
+    </div>
+  </nav>
+
+  <div class="page" id="page-root">
+    <div style="padding:80px 0;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.3em;color:var(--text-3)">Загрузка...</div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <div class="site-footer-brand">
+        <a href="/" class="site-footer-logo"><img src="Talori1.png" alt="Talori"/><span class="site-footer-logo-text">TALORI</span></a>
+        <p class="site-footer-desc">Японское ноир-комьюнити в Discord. Мафия, события, кланы — всё на одном сервере.</p>
+      </div>
+      <div>
+        <div class="site-footer-col-title">Навигация</div>
+        <div class="site-footer-links"><a href="/events.html">События</a><a href="/leaderboard.html">Рейтинги</a><a href="/mafia.html">Мафия</a><a href="/clan.html">Кланы</a></div>
+      </div>
+      <div>
+        <div class="site-footer-col-title">Аккаунт</div>
+        <div class="site-footer-links"><a href="/profile.html">Профиль</a><a href="/auth/login">Войти через Discord</a><a href="/auth/logout">Выйти</a></div>
+      </div>
+    </div>
+    <div class="site-footer-bottom">
+      <span class="site-footer-copy">© MMXXVI TALORI · ALL RIGHTS RESERVED</span>
+      <span class="site-footer-kanji">武道の道は永遠に</span>
+    </div>
+  </footer>
+
+  <script>
+    const ROLES = [
+      {key:'mir',lbl:'Мирный',   c:'#5b7de8'},{key:'maf',lbl:'Мафия',    c:'#e05555'},
+      {key:'kom',lbl:'Комиссар', c:'#3ab8b8'},{key:'doc',lbl:'Доктор',   c:'#4aab7a'},
+      {key:'don',lbl:'Дон',      c:'#c83b3b'},{key:'put',lbl:'Путана',   c:'#8b5fe8'},
+      {key:'ved',lbl:'Ведьма',   c:'#9e6aff'},{key:'tel',lbl:'Телохр.',  c:'#c8a84b'},
+      {key:'man',lbl:'Маньяк',   c:'#e85b5b'},{key:'shu',lbl:'Шут',      c:'#c8b89a'},
+    ];
+    const CLAN_ROLES = {leader:'Лидер',deputy:'Заместитель',veteran:'Ветеран',member:'Участник',recruit:'Рекрут',newbie:'Новичок'};
+    const CLOSES_LIST = [
+      {key:'cs2',lbl:'CS 2',c:'#f0a040'},{key:'dota2',lbl:'Dota 2',c:'#c83b3b'},
+      {key:'valorant',lbl:'Valorant',c:'#ff4655'},{key:'deadlock',lbl:'Deadlock',c:'#5b7de8'},
+      {key:'mlbb',lbl:'MLBB',c:'#4aab7a'},
+    ];
+
+    const DEMO = {
+      id:'0', username:'Кирито', avatar:null, banner:'__demo__',
+      level:23, exp:11450, nextLevelExp:12000,
+      reputation:47, balance:28400, rank:12, isStaff:false,
+      ranks:{mafia:8,voice:23,messages:31,eco:15,clan:4},
+      stats:{
+        messages:4820, voiceMs:864000000*1.2,
+        mafia:{games:112,wins:67,roles:{
+          mir:{games:38,wins:22},maf:{games:24,wins:16},kom:{games:14,wins:9},
+          doc:{games:12,wins:7},don:{games:10,wins:6},put:{games:7,wins:4},
+          shu:{games:4,wins:1},man:{games:3,wins:2},
+        }}
+      },
+      closes:{cs2:{games:45,wins:28},dota2:{games:12,wins:6},valorant:{games:8,wins:5},deadlock:{games:3,wins:2},mlbb:{games:0,wins:0}},
+      poker:{games:34,wins:19,biggestPot:15000,balanceChange:8400},
+      clan:{id:'1',clanName:'Kuroi Ken',clanColor:0x8b5fe8,clanLevel:4,clanRating:8750,role:'veteran'}
+    };
+
+    const fn  = n => Number(n||0).toLocaleString('ru-RU');
+    const fv  = ms => { const s=Math.floor((ms||0)/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60); return h>0?`${h}ч ${m}м`:m>0?`${m}м`:'—'; };
+    const ini = n => (n||'?').split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    const wrc = r => r>=55?'var(--green)':r>=40?'var(--ink)':r>0?'var(--red)':'var(--text-3)';
+    const rkc = r => r===1?'gold':r===2?'silver':r===3?'bronze':'';
+
+    async function init() {
+      const uid = new URLSearchParams(location.search).get('id');
+      let me, isDemo=false;
+      try {
+        const r = await fetch(uid?`/api/profile/${uid}`:'/api/me');
+        if (r.status===401&&!uid) { renderLogin(); return; }
+        if (!r.ok) throw 0;
+        me = await r.json();
+      } catch { me=DEMO; isDemo=true; }
+      render(me, isDemo);
+    }
+
+    function renderLogin() {
+      document.getElementById('page-root').innerHTML=`<div class="lp"><div style="font-family:'Noto Serif JP',serif;font-size:60px;opacity:.06;margin-bottom:14px">名</div><h2>Войди, чтобы увидеть профиль</h2><p>Профиль доступен только участникам сервера Talori.</p><a href="/auth/login?redirect=/profile.html" class="btn btn-primary">Войти через Discord</a></div>`;
+    }
+
+    function render(me, isDemo) {
+      const maf   = me.stats?.mafia||{};
+      const rd    = maf.roles||{};
+      const games = maf.games||0, wins=maf.wins||0;
+      const wr    = games>0?Math.round(wins/games*100):0;
+      const lvl   = me.level||0, exp=me.exp||0, nxt=me.nextLevelExp||(lvl*500+500);
+      const xpPct = Math.min(100,Math.round(exp/nxt*100));
+      const clanC = me.clan?.clanColor?`#${Number(me.clan.clanColor).toString(16).padStart(6,'0')}`:'#8b5fe8';
+      const hasStaff = me.isStaff||me.isAdmin||me.isMod;
+
+      let bannerUrl = null;
+      if (isDemo && me.banner==='__demo__') bannerUrl='Talori_.png';
+      else if (me.banner) { const ext=me.banner.startsWith('a_')?'gif':'png'; bannerUrl=`https://cdn.discordapp.com/banners/${me.id}/${me.banner}.${ext}?size=1024`; }
+
+      let bdg=`<span class="pb pb-lv">Ур.&thinsp;${lvl}</span>`;
+      if (me.rank) bdg+=`<span class="pb pb-rk">#&thinsp;${me.rank}</span>`;
+      if (me.clan) bdg+=`<span class="pb pb-cl">${me.clan.clanName}</span>`;
+      const staffBadgeLabel = (me.position && me.position !== 'Без должности') ? me.position : (me.staffRole && me.staffRole !== 'Стафф') ? me.staffRole : 'Стафф';
+      if (me.isAdmin) bdg+=`<span class="pb pb-ad">Администратор</span>`;
+      else if (me.isMod||me.isStaff) bdg+=`<span class="pb pb-st">${staffBadgeLabel}</span>`;
+      if (isDemo) bdg+=`<span class="pb pb-demo">demo</span>`;
+
+      const avInner = (me.avatar&&me.id!=='0')?`<img src="https://cdn.discordapp.com/avatars/${me.id}/${me.avatar}.webp?size=128" alt="">`:ini(me.username);
+
+      document.title=`${me.username} — Профиль — Talori`;
+      document.getElementById('page-root').innerHTML=`
+        <div class="ph">
+          <div class="ph-banner"><div class="ph-bi" id="phBi"></div><div class="ph-bf"></div></div>
+          <div class="ph-glow" style="background:radial-gradient(ellipse at 6% 60%,${clanC}18 0%,transparent 48%)"></div>
+          <div class="ph-kanji">名</div>
+          <div class="ph-corner"></div>
+          <div class="ph-inner">
+            <div style="position:relative;flex-shrink:0">
+              <div class="ph-av">${avInner}</div>
+              <div class="ph-ring"></div>
+            </div>
+            <div class="ph-info">
+              <div class="ph-ey">Профиль · プロフィール</div>
+              <div class="ph-name">${me.username}</div>
+              <div class="ph-badges">${bdg}</div>
+              <div class="ph-qs">
+                <div class="pq"><div class="pq-v">${games}</div><div class="pq-l">Игр</div></div>
+                <div class="pq"><div class="pq-v" style="color:var(--gold)">${wins}</div><div class="pq-l">Побед</div></div>
+                <div class="pq"><div class="pq-v" style="color:var(--ink)">${wr>0?wr+'%':'—'}</div><div class="pq-l">Винрейт</div></div>
+                <div class="pq"><div class="pq-v">${fn(me.stats?.messages)}</div><div class="pq-l">Сообщений</div></div>
+                <div class="pq"><div class="pq-v">${fv(me.stats?.voiceMs)}</div><div class="pq-l">Голос</div></div>
+              </div>
+              <div class="ph-xp">
+                <div class="ph-xp-m"><span>Уровень ${lvl}</span><span>${fn(exp)} / ${fn(nxt)} XP</span></div>
+                <div class="ph-xp-t"><div class="ph-xp-f" id="xpf"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sr">
+          <div class="sc"><div class="sc-n">— 01</div><div class="sc-v">${games}</div><div class="sc-l">Игр в мафии</div></div>
+          <div class="sc"><div class="sc-n">— 02</div><div class="sc-v" style="color:var(--gold)">${wins}</div><div class="sc-l">Побед</div></div>
+          <div class="sc"><div class="sc-n">— 03</div><div class="sc-v" style="color:var(--ink)">${wr>0?wr+'%':'—'}</div><div class="sc-l">Винрейт</div></div>
+          <div class="sc"><div class="sc-n">— 04</div><div class="sc-v" style="color:var(--green)">${lvl}</div><div class="sc-l">Уровень</div></div>
+        </div>
+
+        <div class="pl">
+          <div class="pm">
+            <div class="pc">
+              <div class="pc-h">
+                <div class="sub-bar">
+                  <button class="sub-btn active" data-target="sp-mafia">Мафия</button>
+                  <button class="sub-btn" data-target="sp-closes">Клозы</button>
+                  <button class="sub-btn" data-target="sp-poker">Покер</button>
+                  <button class="sub-btn" data-target="sp-tops">Топы</button>
+                  ${hasStaff?'<button class="sub-btn" data-target="sp-staff">Стафф</button>':''}
+                </div>
+                <div class="pc-m">${games} игр</div>
+              </div>
+              <div class="pc-b" style="padding-top:14px">
+                <div id="sp-mafia"  class="sub-pane active">${pMafia(rd,games,wins)}</div>
+                <div id="sp-closes" class="sub-pane">${pCloses(me.closes)}</div>
+                <div id="sp-poker"  class="sub-pane">${pPoker(me.poker)}</div>
+                <div id="sp-tops"   class="sub-pane">${pTops(me)}</div>
+                ${hasStaff?`<div id="sp-staff" class="sub-pane">${pStaff(me)}</div>`:''}
+              </div>
+            </div>
+
+            <div class="pc">
+              <div class="pc-h"><div class="pc-t">Активность</div><div class="pc-m">По часам · UTC+3</div></div>
+              <div class="pc-b">
+                <div class="hm">${heatmap()}</div>
+                <div class="hm-l"><span>0:00</span><span>6:00</span><span>12:00</span><span>18:00</span><span>23:00</span></div>
+                <div style="height:14px"></div>
+                <div class="ml">
+                  <div class="mr"><span class="mk">Сообщений всего</span><span class="mv">${fn(me.stats?.messages)}</span></div>
+                  <div class="mr"><span class="mk">Голосовое время</span><span class="mv">${fv(me.stats?.voiceMs)}</span></div>
+                  <div class="mr"><span class="mk">Опыт</span><span class="mv" style="color:var(--ink)">${fn(exp)} XP</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ps">
+            ${clanCard(me.clan, clanC)}
+            <div class="pc">
+              <div class="pc-h"><div class="pc-t">Экономика</div></div>
+              <div class="pc-bs">
+                <div class="ml">
+                  <div class="mr"><span class="mk">Баланс</span><span class="mv" style="color:var(--gold)">${fn(me.balance)}&thinsp;₮</span></div>
+                  <div class="mr"><span class="mk">Репутация</span><span class="mv" style="color:${(me.reputation||0)>=0?'var(--green)':'var(--red)'}">${(me.reputation||0)>0?'+':''}${me.reputation||0}</span></div>
+                </div>
+              </div>
+            </div>
+            ${hasStaff?`<div class="pc"><div class="pc-h"><div class="pc-t">Стафф</div><div class="pc-m" style="color:var(--gold)">★</div></div><div class="pc-bs"><div class="ml"><div class="mr"><span class="mk">Должность</span><span class="mv" style="color:var(--ink)">${(me.position&&me.position!=='Без должности')?me.position:(me.staffRole&&me.staffRole!=='Стафф')?me.staffRole:'Без должности'}</span></div></div></div></div>`:''}
+          </div>
+        </div>
+      `;
+
+      if (bannerUrl) { const bi=document.getElementById('phBi'); if(bi){ const t=new Image(); t.onload=()=>{bi.style.backgroundImage=`url(${bannerUrl})`;bi.classList.add('vis');}; t.src=bannerUrl; } }
+      requestAnimationFrame(()=>setTimeout(()=>{const el=document.getElementById('xpf');if(el)el.style.width=xpPct+'%';},120));
+      document.getElementById('page-root').addEventListener('click',e=>{
+        const btn=e.target.closest('.sub-btn');
+        if(!btn)return;
+        const bar=btn.closest('.sub-bar');if(!bar)return;
+        bar.querySelectorAll('.sub-btn').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const wrap=bar.closest('.pc').querySelector('.pc-b');
+        wrap.querySelectorAll('.sub-pane').forEach(p=>p.classList.remove('active'));
+        const t=btn.dataset.target;if(t){const p=document.getElementById(t);if(p)p.classList.add('active');}
+      });
+    }
+
+    function pMafia(rd,games,wins) {
+      const losses=games-wins;
+      const ar=ROLES.filter(r=>(rd[r.key]?.games||0)>0);
+      const maxG=Math.max(1,...ar.map(r=>rd[r.key].games));
+      const top=ar.length>0?ar.reduce((a,b)=>rd[b.key].games>rd[a.key].games?b:a):null;
+      const best=ar.length>0?ar.reduce((a,b)=>{const wa=rd[a.key].games>0?rd[a.key].wins/rd[a.key].games:0,wb=rd[b.key].games>0?rd[b.key].wins/rd[b.key].games:0;return wb>wa?b:a;}):null;
+      return `
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px">
+          <div class="sc"><div class="sc-n">Игр</div><div class="sc-v">${games}</div></div>
+          <div class="sc"><div class="sc-n">Побед</div><div class="sc-v" style="color:var(--green)">${wins}</div></div>
+          <div class="sc"><div class="sc-n">Пораж.</div><div class="sc-v" style="color:var(--red)">${losses}</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+          <div class="sc"><div class="sc-n">Любимая роль</div>${top?`<div style="display:flex;align-items:center;gap:7px;margin-top:4px"><div class="rd" style="background:${top.c};width:9px;height:9px;flex-shrink:0"></div><div class="sc-v" style="font-size:15px">${top.lbl}</div></div><div class="sc-l" style="margin-top:3px">${rd[top.key].games} игр</div>`:'<div class="sc-v">—</div>'}</div>
+          <div class="sc"><div class="sc-n">Лучшая роль</div>${best?`<div style="display:flex;align-items:center;gap:7px;margin-top:4px"><div class="rd" style="background:${best.c};width:9px;height:9px;flex-shrink:0"></div><div class="sc-v" style="font-size:15px;color:var(--green)">${best.lbl}</div></div><div class="sc-l" style="margin-top:3px">${Math.round(rd[best.key].wins/rd[best.key].games*100)}% WR</div>`:'<div class="sc-v">—</div>'}</div>
+        </div>
+        ${ar.length>0
+          ?`<div class="rr rr-h"><span>Роль</span><span></span><span>Игр</span><span>WR</span></div>
+            ${ar.map(r=>{const g=rd[r.key].games,w=rd[r.key].wins,rwr=g>0?Math.round(w/g*100):0;
+              return`<div class="rr"><div class="rn"><div class="rd" style="background:${r.c}"></div>${r.lbl}</div><div class="rb"><div class="rb-t"><div class="rb-f" style="background:${r.c};width:${Math.round(g/maxG*100)}%"></div></div></div><div class="rg">${g}</div><div class="rw" style="color:${wrc(rwr)}">${rwr>0?rwr+'%':'—'}</div></div>`;
+            }).join('')}`
+          :`<div style="color:var(--text-3);font-size:13px;padding:16px 0;text-align:center">Статистика появится после первых игр</div>`}`;
+    }
+
+    function pCloses(cl) {
+      cl=cl||{};
+      const cT=CLOSES_LIST.reduce((s,d)=>s+(cl[d.key]?.games||0),0);
+      const cW=CLOSES_LIST.reduce((s,d)=>s+(cl[d.key]?.wins||0),0);
+      const cWr=cT>0?Math.round(cW/cT*100):0;
+      const mxG=Math.max(1,...CLOSES_LIST.map(d=>cl[d.key]?.games||0));
+      return `
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px">
+          <div class="sc"><div class="sc-n">Матчей</div><div class="sc-v">${cT}</div></div>
+          <div class="sc"><div class="sc-n">Побед</div><div class="sc-v" style="color:var(--green)">${cW}</div></div>
+          <div class="sc"><div class="sc-n">Винрейт</div><div class="sc-v" style="color:var(--ink)">${cWr>0?cWr+'%':'—'}</div></div>
+        </div>
+        ${cT>0
+          ?`<div class="rr rr-h"><span>Дисциплина</span><span></span><span>Игр</span><span>WR</span></div>
+            ${CLOSES_LIST.map(d=>{const g=cl[d.key]?.games||0,w=cl[d.key]?.wins||0,dwr=g>0?Math.round(w/g*100):0;
+              return`<div class="rr"><div class="rn"><div class="rd" style="background:${d.c}"></div>${d.lbl}</div><div class="rb"><div class="rb-t"><div class="rb-f" style="background:${d.c};width:${g>0?Math.round(g/mxG*100):0}%"></div></div></div><div class="rg">${g>0?g:'—'}</div><div class="rw" style="color:${wrc(dwr)}">${dwr>0?dwr+'%':'—'}</div></div>`;
+            }).join('')}`
+          :`<div style="color:var(--text-3);font-size:13px;padding:16px 0;text-align:center">Нет матчей в Closes</div>`}`;
+    }
+
+    function pPoker(pk) {
+      pk=pk||{}; const pkWr=pk.games>0?Math.round(pk.wins/pk.games*100):0,pkB=pk.balanceChange||0;
+      return `
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px">
+          <div class="sc"><div class="sc-n">Игр</div><div class="sc-v">${pk.games||0}</div></div>
+          <div class="sc"><div class="sc-n">Побед</div><div class="sc-v" style="color:var(--green)">${pk.wins||0}</div></div>
+          <div class="sc"><div class="sc-n">Винрейт</div><div class="sc-v" style="color:var(--ink)">${pkWr>0?pkWr+'%':'—'}</div></div>
+          <div class="sc"><div class="sc-n">Прибыль</div><div class="sc-v" style="color:${pkB>=0?'var(--green)':'var(--red)'}">${pkB>=0?'+':''}${fn(pkB)}&thinsp;₮</div></div>
+        </div>
+        ${pk.biggestPot?`<div class="ml"><div class="mr"><span class="mk">Крупнейший банк</span><span class="mv" style="color:var(--gold)">${fn(pk.biggestPot)}&thinsp;₮</span></div></div>`:''}`;
+    }
+
+    function pTops(me) {
+      const r=me.ranks||{};
+      const cats=[
+        {cat:'Общий',     val:me.rank,     sub:`${fn(me.exp||0)} XP`},
+        {cat:'Мафия',     val:r.mafia,     sub:`WR: ${me.stats?.mafia?.games>0?Math.round(me.stats.mafia.wins/me.stats.mafia.games*100)+'%':'—'}`},
+        {cat:'Голос',     val:r.voice,     sub:fv(me.stats?.voiceMs)},
+        {cat:'Сообщения', val:r.messages,  sub:`${fn(me.stats?.messages)} сообщ.`},
+        {cat:'Экономика', val:r.eco,       sub:`${fn(me.balance)} ₮`},
+        {cat:'Кланы',     val:r.clan,      sub:me.clan?.clanName||'—'},
+      ];
+      return `<div class="tops-grid">${cats.map(({cat,val,sub})=>{
+        const rk=val||null,rc=rk?rkc(rk):'';
+        return`<div class="top-card"><div class="top-cat">${cat}</div><div class="top-rank ${rc}">${rk?'#'+rk:'—'}</div><div class="top-val">${sub}</div></div>`;
+      }).join('')}</div>`;
+    }
+
+    function pStaff(me) {
+      return `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+          <div class="sc"><div class="sc-n">Голос (саппорт)</div><div class="sc-v" style="color:var(--ink)">${fv(me.staffStats?.voiceMs||864000000*4.5)}</div></div>
+          <div class="sc"><div class="sc-n">Сессий</div><div class="sc-v">${fn(me.staffStats?.sessions||128)}</div></div>
+        </div>
+        <div class="ml">
+          <div class="mr"><span class="mk">Должность</span><span class="mv" style="color:var(--ink)">${(me.position&&me.position!=='Без должности')?me.position:(me.staffRole&&me.staffRole!=='Стафф')?me.staffRole:'Без должности'}</span></div>
+          ${me.staffStats?.sinceDate?`<div class="mr"><span class="mk">На стаффе с</span><span class="mv">${me.staffStats.sinceDate}</span></div>`:''}
+        </div>`;
+    }
+
+    function clanCard(c, cc) {
+      if (!c) return '';
+      return `<div class="cc">
+        <div class="cc-g" style="background:radial-gradient(ellipse at 15% 50%,${cc}2e 0%,transparent 62%)"></div>
+        <div class="cc-i">
+          <div class="cc-ey">Клан</div>
+          <div class="cc-hd">
+            <div class="cc-logo" style="${c.clanLogo?'':`background:${cc}22;color:${cc};`}">${c.clanLogo?`<img src="${c.clanLogo}" alt="">`:ini(c.clanName)}</div>
+            <div><div class="cc-name">${c.clanName}</div><div class="cc-role">${CLAN_ROLES[c.role]||'Участник'}</div></div>
+          </div>
+          <div class="cc-sg">
+            <div class="cs"><div class="csv" style="color:var(--gold)">${fn(c.clanRating)}</div><div class="csl">Рейтинг</div></div>
+            <div class="cs"><div class="csv">Ур.&thinsp;${c.clanLevel||1}</div><div class="csl">Уровень</div></div>
+          </div>
+          <a href="/clan.html?id=${c.id}" class="btn btn-ghost" style="width:100%;justify-content:center;font-size:11px;padding:8px 0">Страница клана →</a>
+        </div>
+      </div>`;
+    }
+
+    function heatmap() {
+      const P=[0,.05,.04,.04,.04,.04,.12,.30,.52,.60,.70,.80,.85,.80,.70,.60,.72,.82,.92,1,.90,.80,.50,.22];
+      return Array.from({length:24},(_,i)=>{const v=Math.random()<P[i]?Math.ceil(Math.random()*4):0;return`<div class="hc${v>0?' l'+v:''}"></div>`;}).join('');
+    }
+
+    init();
+
+    (async()=>{
+      try{
+        const r=await fetch('/api/me');if(!r.ok)throw 0;
+        const me=await r.json();
+        document.getElementById('nav-right').innerHTML=`<a href="/profile.html" class="site-nav-user" style="text-decoration:none">${me.avatar?`<img class="site-nav-avatar" src="https://cdn.discordapp.com/avatars/${me.id}/${me.avatar}.webp?size=64" alt="">`:''}<span class="site-nav-username">${me.username}</span></a><a href="/auth/logout" class="site-nav-btn">Выйти</a>`;
+      }catch{
+        document.getElementById('nav-right').innerHTML=`<a href="/auth/login?redirect=/profile.html" class="site-nav-btn"><span class="site-nav-btn-dot"></span>Войти</a>`;
+      }
+    })();
+  </script>
+</body>
+</html>
